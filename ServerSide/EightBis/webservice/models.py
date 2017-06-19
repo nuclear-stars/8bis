@@ -14,6 +14,7 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+@python_2_unicode_compatible
 class DishCategory(models.Model):
     name = models.CharField(max_length=100)
 
