@@ -14,3 +14,7 @@ class Restaurant(models.Model):
 class Dish(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     name = models.CharField(max_length=300)
+
+
+class Vote(models.Model):
+    username = models.CharField(max_length=200)
