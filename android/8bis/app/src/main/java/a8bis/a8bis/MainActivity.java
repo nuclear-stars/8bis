@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void moveToRestaurants(String username) {
-        Intent k = new Intent(this, RestaurantsActivity.class);
+        //Intent k = new Intent(this, RestaurantsActivity.class);
+        Intent k = new Intent(this, SingleRestaurantActivity.class);
         k.putExtra(getString(R.string.username_setting), username);
         startActivity(k);
         finish();

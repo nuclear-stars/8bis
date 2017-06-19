@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import org.eazegraph.lib.charts.VerticalBarChart;
+
 public class SingleRestaurantActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,9 @@ public class SingleRestaurantActivity extends AppCompatActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        VerticalBarChart barChart = (VerticalBarChart) findViewById(R.id.rating_bar_chart);
+        barChart.addBar(new )
     }
 
     @Override
