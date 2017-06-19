@@ -21,30 +21,47 @@
 	<link rel="stylesheet" href="style.css">
 	<script type="text/javascript">
 		$(function () {
+			function category_name_from_li(li) {
+				var li_classes = li.attr('class').split(' ');
+				var ret = "";
+				$.each(li_classes, function( index, value ) {
+					split_str = value.split("-");
+					if ((split_str.length == 2) && (split_str[1] == "dish")) {
+						ret = split_str[0];
+						return ret;
+					}
+				});
+				return ret;
+			}
+			
 		    $(".connectedSortable").sortable({
 		        connectWith: ".connectedSortable",
 		        receive: function(event, ui)  {
-					//var category_name = ui.sender[0].parentNode.parentNode.id;
-					var li_classes = ui.item[0].classList;
 					var category_name = $(this).parent().parent().attr("id");
 					if (category_name == "chosen-dishes") {
 						return true;
 					}
-					$.each(li_classes, function( index, value ) {
-						split_str = value.split("-");
-						if ((split_str.length == 2) && (split_str[1] == "dish") && (split_str[0] != category_name)) {
-							$('.bottom-right').notify({
-								message: { text: 'לא ניתן להחזיר ארוחה מהסוג הלא נכון' }
-							}).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+					orig_category_name = category_name_from_li($(ui.item[0]));
+					if (orig_category_name != category_name) {
+						$('.bottom-right').notify({
+							message: { text: 'לא ניתן להחזיר ארוחה מהסוג הלא נכון' }
+						}).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
 
-							ui.sender.sortable("cancel");
-						}
-					});
+						ui.sender.sortable("cancel");
+					}
 					return true;
-
-					//alert(targetList);
-					//alert(ui.item[0].classList);
 		        }
+		    });
+		    
+		    $("#chosen-dishes ul.nav").on("click", "li", function() {
+			    //orig_category_name = category_name_from_li($(this));
+			    //$("#" + orig_category_name + " ul").append($(this));
+			    
+			    $('#editModal').modal('show');
+		    });
+		    
+		    $("#dishes-to-choose ul.nav").on("click", "li", function() {
+			    $("#chosen-dishes ul").append($(this));
 		    });
 		});
 	</script>
@@ -91,9 +108,9 @@
 	            <div id="salads" class="">
 	                <div class="panel-body">
 						<ul class="nav nav-pills connectedSortable">
-						    <li class="active salads-dish"><a href="#">סלט ירקות</a></li>
-						    <li class="active salads-dish"><a href="#">חסה</a></li>
-						    <li class="active salads-dish"><a href="#">כוסברה</a></li>
+						    <li class="active salads-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>סלט ירקות</a></li>
+						    <li class="active salads-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>חסה</a></li>
+						    <li class="active salads-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>כוסברה</a></li>
 						</ul>
 	                </div>
 	            </div>
@@ -107,8 +124,8 @@
 	            <div id="breakfast" class="">
 	                <div class="panel-body">
 	                    <ul class="nav nav-pills connectedSortable">
-						    <li class="active breakfast-dish"><a href="#">חביתה</a></li>
-						    <li class="active breakfast-dish"><a href="#">שוקו</a></li>
+						    <li class="active breakfast-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>חביתה</a></li>
+						    <li class="active breakfast-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>שוקו</a></li>
 						</ul>
 	                </div>
 	            </div>
@@ -122,13 +139,36 @@
 	            <div id="carbs" class="">
 	                <div class="panel-body">
 	                    <ul class="nav nav-pills connectedSortable">
-						    <li class="active carbs-dish"><a href="#">פסטה</a></li>
-						    <li class="active carbs-dish"><a href="#">אורז</a></li>
+						    <li class="active carbs-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>פסטה</a></li>
+						    <li class="active carbs-dish"><a href="#"><span class="glyphicon glyphicon-pencil"></span>אורז</a></li>
 						</ul>
 	                </div>
 	            </div>
 	        </div>
-		</div>
-	</div>
+		</div> <!-- #dishes-to-choose -->
+	</div> <!-- #container -->
+	
+	<!-- Modal -->
+	<div class="modal fade" id="editModal" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">עריכה - עוף בשמן</h4>
+				</div>
+				<div class="modal-body">
+					<input class="form-control" placeholder="שם המנה" value="עוף בשמן" />
+					<input class="form-control" placeholder="תיאור בקצרה" />
+					<textarea class="form-control" placeholder="מתכון">פשוט שים מלא שמן</textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" class="update">עדכן</button>
+					<button type="button" class="btn btn-primary" class="update">עדכן מתכון ליום זה בלבד</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">בטל</button>
+				</div>
+			</div>
+		</div> <!-- modal-dialog -->
+	</div> <!-- editModal -->
 </body>
 </html>

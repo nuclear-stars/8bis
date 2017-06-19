@@ -22,8 +22,17 @@ body {
 	min-height: 50px;
 }
 
-#chosen-dishes.panel-group .panel .nav {
+#chosen-dishes .nav {
 	min-height: 200px;
+}
+
+li.active a .glyphicon {
+	margin-left: 5px;
+	display: none;
+}
+
+#chosen-dishes .nav li.active a .glyphicon {
+	display: inline !important;
 }
 
 li.active.salads-dish a {
