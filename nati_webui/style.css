@@ -1,0 +1,48 @@
+body {
+  padding-top: 50px;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.bs-example {
+	margin: 20px;
+}
+
+#dishes-to-choose.panel-group .panel {
+	float: left;
+	width: 32%;
+	margin-right: 5px;
+	margin-top: 0 !important;
+}
+
+.panel-group .panel .nav {
+	min-height: 50px;
+}
+
+#chosen-dishes .nav {
+	min-height: 200px;
+}
+
+li.active a .glyphicon {
+	margin-left: 5px;
+	display: none;
+}
+
+#chosen-dishes .nav li.active a .glyphicon {
+	display: inline !important;
+}
+
+li.active.salads-dish a {
+	background-color: #5cb85c !important;
+}
+
+li.active.breakfast-dish a {
+	background-color: #f0ad4e !important;
+}
+
+li.active.carbs-dish a {
+	background-color: #0275d8 !important;
+}
