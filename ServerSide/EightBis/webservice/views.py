@@ -80,7 +80,7 @@ def remove_dish_from_restuarant(request, restaurant_id):
         pass
     return JsonResponse(result)
 
-
+@csrf_exempt
 def set_day(request, restaurant_id, dish_id):
     """
     Add this certain dish to the list of dishes for a certain day

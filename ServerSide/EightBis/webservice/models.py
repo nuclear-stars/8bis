@@ -70,7 +70,7 @@ class DailyDish(models.Model):
     """
     dish = models.ForeignKey(Dish)
     day = models.DateField()
-    extra_recipe = models.CharField(max_length=2000)
+    extra_recipe = models.CharField(max_length=2000, null=True)
     restaurant = models.ForeignKey(Restaurant)
 
 
