@@ -13,14 +13,13 @@ def index(request):
     return HttpResponse("This is my index")
 
 def restaurants(request):
-    restaurant_list = [r.name for r in Restaurant.objects.all()]
+    restaurant_list = [{'name': r.name, 'id': r.id} for r in Restaurant.objects.all()]
     return JsonResponse({'restaurants': restaurant_list})
 
 def rest_detail(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
     possible_dishes = Dish.objects.filter(restaurant=restaurant.id)
-    dishes = [{'name': dish.name,
-               'votes': {value[0]: Vote.objects.filter(vote_selection=value).count() for value in Vote.TASTE_VOTES_CHOICES}}
+    dishes = [dish.serialize()
               for dish in possible_dishes]
     value = {
         'name': restaurant.name,
@@ -28,4 +27,12 @@ def rest_detail(request, restaurant_id):
     }
     return JsonResponse(value)
 
-def dish_detail(request, dish_id)
+def dish_detail(request, dish_id):
+    dish = get_object_or_404(Dish, id=int(dish_id))
+
+    # This means someone is trying to post a review for this meal
+    if request.method == 'POST':
+        import pdb; pdb.set_trace()
+
+    if request.method == 'GET':
+        return JsonResponse(dish.serialize())
