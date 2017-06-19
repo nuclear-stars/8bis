@@ -49,8 +49,8 @@
             android:layout_height="match_parent"
             android:hint="Username"
             android:inputType="text|textNoSuggestions"
-            android:singleLine="true"
-            android:textSize="35sp" />
+            android:textSize="35sp"
+            android:maxLines="1" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -60,6 +60,7 @@
         android:layout_height="70dp"
         android:layout_marginBottom="20dp"
         android:layout_weight="1"
+        android:contentDescription="Next"
         android:onClick="onNextPressed"
         android:scaleType="fitStart"
         android:src="@drawable/ic_arrow_forward_black_24px"
