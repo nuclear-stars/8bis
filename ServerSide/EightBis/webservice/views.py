@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 
-from .models import Restaurant
+from .models import Restaurant, Dish
 
 # Create your views here.
 def index(request):
@@ -17,11 +17,12 @@ def restaurants(request):
     return JsonResponse({'restaurants': restaurant_list})
 
 def rest_detail(request, restaurant_id):
-    import pdb; pdb.set_trace()
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
+    dishes = [dish.name for dish in Dish.objects.filter(restaurant=restaurant.id)]
 
     value = {
         'name': restaurant.name,
+        'dishes': dishes,
     }
 
     return JsonResponse(value)
