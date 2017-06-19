@@ -89,13 +89,18 @@ def set_day(request, restaurant_id, dish_id):
     result = {'result': 'False'}
     if request.method == "POST":
         try:
-            new_daily = DailyDish(dish=dish_id,
-                                  restaurant=restaurant_id,
-                                  extra_recipe="")
-            new_daily.save()
-            result = {'result': "True"}
+            restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+            dish = get_object_or_404(Dish, id=dish_id)
+            json_content = json.loads(request.read())
+            if json_content['day'] == 'today':
+                new_daily = DailyDish(dish=dish,
+                                      restaurant=restaurant,
+                                      extra_recipe="",
+                                      day=datetime.datetime.now())
+                new_daily.save()
+                result = {'result': "True"}
         except Exception, e:
-            pass
+            import pdb; pdb.set_trace()
     return JsonResponse(result)
 
 

@@ -73,6 +73,8 @@ class DailyDish(models.Model):
     extra_recipe = models.CharField(max_length=2000, null=True)
     restaurant = models.ForeignKey(Restaurant)
 
+    def __str__(self):
+        return self.dish.name + " @ " + str(self.day)
 
 ################ LEAVING VOTES FOR NOW ##########################
 class Vote(models.Model):
