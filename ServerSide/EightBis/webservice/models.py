@@ -56,7 +56,8 @@ class Dish(models.Model):
                 restaurant = Restaurant.objects.get(id=restaurant_id),
                 name=dish_values['name'],
                 short_desc=dish_values['short_desc'],
-                recipe=dish_values['recipe']
+                recipe=dish_values['recipe'],
+                category=dish_values['category']
             )
             new_dish.save()
         except Exception, e:

@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 
-from .models import Restaurant, Dish, Vote, VoteSerializationException
+from .models import Restaurant, Dish, Vote, VoteSerializationException, DishCategory
 
 # Create your views here.
 def index(request):
@@ -64,4 +64,11 @@ def add_dish_to_restaurant(request, restaurant_id):
             result = {'result': 'False'}
         return JsonResponse(result)
 
+def get_all_categories(request):
+    all_cats = DishCategory.objects.all()
+    value = {'categories': {
+        'id': cat.id,
+        'name': cat.name
+    } for cat in all_cats}
+    return JsonResponse(value)
 
