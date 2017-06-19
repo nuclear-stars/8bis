@@ -125,6 +125,7 @@ def get_today_dishes_as_dict(restaurant_id):
             'recipe': dish.dish.recipe,
             'category_id': dish.dish.category.id,
             'extra_recipe': dish.extra_recipe,
+            'id': dish.dish.id
         })
         categories[dish.dish.category.name] = d
 
@@ -136,16 +137,19 @@ def today_dishes(request, restaurant_id):
                'categories': get_today_dishes_as_dict(restaurant_id)}
     return render(request, 'webservice/menu.html', context)
 
-
 def today_dishes_json(request, restaurant_id):
-    return JsonResponse(get_today_dishes_as_dict(restaurant_id))
+     category_to_dish = get_today_dishes_as_dict(restaurant_id)
+     value = {'dishes': []}
+     for cat, dishes in category_to_dish.items():
+         for dish in dishes:
+             value['dishes'].append(dish)
+     return JsonResponse(value)
 
 
 def get_all_categories(request, restaurant_id):
     all_cats = DishCategory.objects.all()
     value = {'categories': {
-        'id': cat.id,
-        'name': cat.name
+        cat.id: cat.name
     } for cat in all_cats}
     return JsonResponse(value)
 
