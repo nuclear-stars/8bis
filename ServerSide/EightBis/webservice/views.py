@@ -104,7 +104,7 @@ def set_day(request, restaurant_id, dish_id):
                     new_daily.save()
                     result = {'result': "True"}
         except Exception, e:
-            import pdb; pdb.set_trace()
+            pass
     return JsonResponse(result)
 
 
@@ -149,7 +149,7 @@ def today_dishes_json(request, restaurant_id):
 def get_all_categories(request, restaurant_id):
     all_cats = DishCategory.objects.all()
     value = {'categories': {
-        cat.id: cat.name
-    } for cat in all_cats}
+        cat.id: cat.name  for cat in all_cats
+    }}
     return JsonResponse(value)
 
