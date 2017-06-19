@@ -13,6 +13,14 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RestaurantsActivity extends AppCompatActivity {
     @Override
@@ -38,6 +46,8 @@ public class RestaurantsActivity extends AppCompatActivity {
 
         TextView usernameLabel = (TextView)findViewById(R.id.usernameLabel);
         usernameLabel.setText(getIntent().getStringExtra(getString(R.string.username_setting)));
+
+        getRestaurantsList();
     }
 
     // TODO: Move to a different class for sidebar
@@ -62,5 +72,35 @@ public class RestaurantsActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void getRestaurantsList() {
+        new JsonResponseTask(getApplicationContext()) {
+            @Override
+            protected void onPostExecute(JSONObject jsonObject) {
+                super.onPostExecute(jsonObject);
+                if (jsonObject == null) return;
+
+                try {
+                    ViewGroup restViewGroup = (ViewGroup) findViewById(R.id.layout_restaurants);
+                    restViewGroup.removeAllViews();
+
+                    JSONArray jsonArr = jsonObject.getJSONArray("restaurants");
+                    for (int i = 0; i < jsonArr.length(); ++i) {
+                        String restaurantName = jsonArr.getString(i);
+                        View restLayout = LayoutInflater.from(RestaurantsActivity.this)
+                                .inflate(R.layout.layout_restaurant, restViewGroup, false);
+                        ((TextView) restLayout.findViewById(R.id.restaurant_name)).setText(restaurantName);
+                        restViewGroup.addView(restLayout);
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(
+                            ctx,
+                            "Failed to read restaurants. Please try again later",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+        }.execute("/restaurants");
     }
 }
