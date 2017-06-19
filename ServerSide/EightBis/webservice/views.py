@@ -93,12 +93,16 @@ def set_day(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                new_daily = DailyDish(dish=dish,
-                                      restaurant=restaurant,
-                                      extra_recipe="",
-                                      day=datetime.datetime.now())
-                new_daily.save()
-                result = {'result': "True"}
+                now = datetime.datetime.now()
+
+                # Make sure this dish doesn't already exist in that days dishes
+                if DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month).count() == 0:
+                    new_daily = DailyDish(dish=dish,
+                                          restaurant=restaurant,
+                                          extra_recipe="",
+                                          day=now)
+                    new_daily.save()
+                    result = {'result': "True"}
         except Exception, e:
             import pdb; pdb.set_trace()
     return JsonResponse(result)
