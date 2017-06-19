@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+import datetime
+from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -83,7 +85,22 @@ def set_day(request, restaurant_id, dish_id):
     return JsonResponse(result)
 
 def today_dishes(request, restaurant_id):
-    return JsonResponse({"A":"A"})
+    restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
+    # Get the list of dishes that are associated for today
+    today = datetime.datetime.now()
+    daily_dishes = DailyDish.objects.filter(restaurant=restaurant.id, day__day=today.day,
+                                            day__year=today.year,
+                                            day__month=today.month)
+
+    categories = {}
+    for dish in daily_dishes:
+        d = categories.get(dish.dish.category.name, [])
+        d.append(dish.dish)
+        categories[dish.dish.category.name] = d
+
+    context = {'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+               'categories': categories}
+    return render(request, 'webservice/menu.html', context)
 
 def get_all_categories(request):
     all_cats = DishCategory.objects.all()
