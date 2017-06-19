@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,6 +15,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String username = getPreferences(Context.MODE_PRIVATE).getString(getString(R.string.username_setting), "");
+        if (username.length() > 0) {
+            // Username is already set, move
+            this.moveToRestaurants(username);
+        }
+    }
+
+    private void moveToRestaurants(String username) {
+        Intent k = new Intent(this, RestaurantsActivity.class);
+        k.putExtra(getString(R.string.username_setting), username);
+        startActivity(k);
+        finish();
     }
 
     public void onNextPressed(View view) {
@@ -23,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
         if (username.length() < 3 || username.length() > 25) {
             Context context = getApplicationContext();
             Toast toast = Toast.makeText(
-                    context,
-                    "Username must be between 3 and 25 characters",
-                    Toast.LENGTH_SHORT
+                    context, getString(R.string.username_3_25_chars), Toast.LENGTH_SHORT
             );
             toast.show();
             return;
@@ -36,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(getString(R.string.username_setting), username);
         editor.apply();
 
-        Intent k = new Intent(this, RestaurantsActivity.class);
-        startActivity(k);
+        this.moveToRestaurants(username);
     }
 }

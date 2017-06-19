@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/side_nav_bar"
         android:gravity="bottom"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
@@ -20,11 +20,21 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
         <TextView
-            android:id="@+id/usernameTextSidebar"
-            android:layout_width="match_parent"
+            android:id="@+id/usernameLabel"
+            android:layout_width="166dp"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:text="usernameLabel"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            android:textAlignment="viewEnd"
+            android:layout_gravity="end"
+            android:textColor="@color/background_material_dark" />
 
     </LinearLayout>
 
@@ -33,24 +43,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="20dp"
+        android:paddingTop="20dp"
         android:paddingBottom="20dp"
-        android:paddingEnd="20dp"
+        android:paddingRight="20dp"
         android:paddingLeft="20dp">
 
         <Switch
             android:id="@+id/isVegan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="false"
-            android:splitTrack="false"
-            android:text="Vegan"
-            tools:checked="false" />
+            android:text="@string/vegan" />
 
         <Switch
             android:id="@+id/isVegetarian"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Vegetarian" />
+            android:text="@string/vegetarian" />
     </LinearLayout>
 
 </LinearLayout>

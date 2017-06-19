@@ -8,6 +8,11 @@
     <string name="title_activity_main">8bit</string>
     <string name="title_activity_restaurants">8bit</string>
 
+    <string name="username_3_25_chars">Username must be between 3 and 25 characters</string>
+
     <!-- Settings -->
     <string name="username_setting">USERNAME_SETTING</string>
+    <string name="logout">Logout</string>
+    <string name="vegetarian">Vegetarian</string>
+    <string name="vegan">Vegan</string>
 </resources>

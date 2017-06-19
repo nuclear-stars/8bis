@@ -6,6 +6,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 public class RestaurantsActivity extends AppCompatActivity {
     @Override
@@ -20,6 +23,17 @@ public class RestaurantsActivity extends AppCompatActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        Switch isVegan = (Switch) findViewById(R.id.isVegan);
+        isVegan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                
+            }
+        });
+
+        TextView usernameLabel = (TextView)findViewById(R.id.usernameLabel);
+        usernameLabel.setText(getIntent().getStringExtra(getString(R.string.username_setting)));
     }
 
     @Override
