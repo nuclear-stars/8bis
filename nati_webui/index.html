@@ -23,6 +23,7 @@
 		$(function () {
 			var AJAX_URL = "http://13.93.107.254/webservice"
 			var g_dishes = null;
+			var g_categories = null;
 			
 			function id_from_li(li, id_prefix) {
 				var li_classes = li.attr('class').split(' ');
@@ -141,6 +142,20 @@
 		    
 		    
 		    $( document ).ready(function() {
+			    $.ajax({
+				    type: "GET",
+				    url: AJAX_URL + "/restaurants/1/categories/json",
+				    success: function(data) {
+					    g_categories = data.categories;
+				    },
+				    failure: function(errMsg) {
+					    warning(errMsg);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					    warning(errorThrown);
+					}
+			    })
+			    
 				$.ajax({
 					type: "GET",
 					url: AJAX_URL + "/restaurants/1/json",
@@ -154,7 +169,7 @@
 									'<div class="panel panel-default"> \
 					            <div class="panel-heading"> \
 					                <h4 class="panel-title"> \
-					                    <a href="#">' + dish.category + '</a> \
+					                    <a href="#">' + g_categories[dish.category] + '</a> \
 					                </h4> \
 					            </div> \
 					            <div id="' + div_id + '" class=""><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
