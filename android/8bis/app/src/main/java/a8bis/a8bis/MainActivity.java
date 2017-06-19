@@ -1,42 +1,42 @@
 package a8bis.a8bis;
 
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
     }
 
     public void onNextPressed(View view) {
-        Intent k = new Intent(this, Restaurants.class);
-        startActivity(k);
-    }
+        EditText edit = (EditText)findViewById(R.id.usernameText);
+        String username = edit.getText().toString();
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if (username.length() < 3 || username.length() > 25) {
+            Context context = getApplicationContext();
+            Toast toast = Toast.makeText(
+                    context,
+                    "Username must be between 3 and 25 characters",
+                    Toast.LENGTH_SHORT
+            );
+            toast.show();
+            return;
         }
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.username_setting), username);
+        editor.apply();
+
+        Intent k = new Intent(this, RestaurantsActivity.class);
+        startActivity(k);
     }
 }
