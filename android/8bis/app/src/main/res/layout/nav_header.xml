@@ -9,7 +9,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="84dp"
         android:background="@drawable/side_nav_bar"
         android:gravity="bottom"
         android:orientation="horizontal"
@@ -26,15 +26,6 @@
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:text="usernameLabel"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/logout"
-            android:textAlignment="viewEnd"
-            android:layout_gravity="end"
-            android:textColor="@color/background_material_dark" />
 
     </LinearLayout>
 
@@ -59,6 +50,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/vegetarian" />
+
+        <TextView
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="onLogout"
+            android:scaleType="fitEnd"
+            android:text="@string/logout" />
     </LinearLayout>
 
 </LinearLayout>

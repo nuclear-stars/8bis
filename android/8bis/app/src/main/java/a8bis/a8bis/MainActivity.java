@@ -43,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
         editor.putString(getString(R.string.username_setting), username);
         editor.apply();
 
