@@ -19,4 +19,5 @@ urlpatterns = [
 
     # Connect dishes to days
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/set_day$', views.set_day, name='set_day'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/set_day$', views.unset_day, name='set_day'),
 ]

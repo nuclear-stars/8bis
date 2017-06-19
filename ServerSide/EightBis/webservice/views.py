@@ -107,6 +107,30 @@ def set_day(request, restaurant_id, dish_id):
             pass
     return JsonResponse(result)
 
+@csrf_exempt
+def unset_day(request, restaurant_id, dish_id):
+    """
+    Add this certain dish to the list of dishes for a certain day
+    for this restaurant
+    """
+    result = {'result': 'False'}
+    if request.method == "POST":
+        try:
+            restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+            dish = get_object_or_404(Dish, id=dish_id)
+            json_content = json.loads(request.read())
+            if json_content['day'] == 'today':
+                now = datetime.datetime.now()
+
+                # Make sure this dish doesn't already exist in that days dishes
+                dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
+                if len(dish) > 0:
+                    dish.delete()
+
+        except Exception, e:
+            pass
+    return JsonResponse(result)
+
 
 def get_today_dishes_as_dict(restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
