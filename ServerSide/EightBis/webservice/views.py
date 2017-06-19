@@ -108,6 +108,33 @@ def set_day(request, restaurant_id, dish_id):
     return JsonResponse(result)
 
 @csrf_exempt
+def set_extra_recipe(request, restaurant_id, dish_id):
+    """
+    Add this certain dish to the list of dishes for a certain day
+    for this restaurant
+    """
+    result = {'result': 'False'}
+    if request.method == "POST":
+        try:
+            restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+            dish = get_object_or_404(Dish, id=dish_id)
+            json_content = json.loads(request.read())
+            if json_content['day'] == 'today':
+                now = datetime.datetime.now()
+
+                # Check if this dish is already set, if not we can't add a recepie
+                if DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month).count() != 0:
+                    new_daily = DailyDish(dish=dish,
+                                          restaurant=restaurant,
+                                          extra_recipe="",
+                                          day=now)
+                    result = {'result': "True"}
+        except Exception, e:
+            pass
+    return JsonResponse(result)
+
+
+@csrf_exempt
 def unset_day(request, restaurant_id, dish_id):
     """
     Add this certain dish to the list of dishes for a certain day

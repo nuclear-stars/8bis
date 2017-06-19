@@ -65,6 +65,7 @@ class Dish(models.Model):
         except Exception, e:
             raise VoteSerializationException
 
+@python_2_unicode_compatible
 class DailyDish(models.Model):
     """
     Represents one connection of a meal to a day
