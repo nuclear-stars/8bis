@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<title></title>
+<meta charset="utf-8" />
+
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="css/uikit-rtl.min.css" />
+
+<!-- jQuery is required -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- UIkit JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
+
+<style>
+html {
+	background: url(background.jpg) fixed;
+}
+</style>
+</head>
+<body>
+<div class="uk-padding-small">
+
+	<div class="uk-text-center uk-text-large" uk-alert>
+	    <p>תפריט היום - <strong>19.6.17</strong></p>
+	</div>
+
+	<ul class="uk-background-muted uk-padding-small uk-panel" uk-accordion="multiple: true; active: 0">
+	    <li>
+	        <h3 class="uk-accordion-title uk-padding-small uk-background-secondary uk-light">מנה עיקרית</h3>
+	        <div class="uk-accordion-content">
+	        	<dl class="uk-description-list uk-padding-small uk-description-list-divider">
+				    <dt>עוף בשמן</dt>
+				    <dd>עוף מתובל בשמן בתוספת רוטב שמן עמוק</dd>
+				    <dt>בורקס בשר</dt>
+				    <dd>יחולק ל-3 הראשונים</dd>
+					<dt>שניצל הפתעות <span uk-icon="icon: cog"></span></dt>
+				    <dd>שניצל עם הפתעה יומית משתנה</dd>
+				</dl>
+	        </div>
+        </li>
+        <li>
+	        <h3 class="uk-accordion-title uk-padding-small uk-background-secondary uk-light">סלטים</h3>
+	        <div class="uk-accordion-content">
+	        	<dl class="uk-description-list uk-padding-small uk-description-list-divider">
+				    <dt>סלט שמיר</dt>
+				    <dd>סלט שמיר קצוץ בתוספת שמיר</dd>
+				    <dt>שמיר בתוספת גזר</dt>
+				    <dd>שמיר עם נגיעות שמיר וגזר</dd>
+				</dl>
+	        </div>
+	    </li>
+	</ul>
+</div>
+</body>
+</html>
