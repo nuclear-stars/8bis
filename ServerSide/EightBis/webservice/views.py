@@ -3,9 +3,7 @@ from __future__ import unicode_literals
 import json
 import datetime
 from django.shortcuts import render
-
 from django.views.decorators.csrf import csrf_exempt
-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -128,6 +126,9 @@ def set_extra_recipe(request, restaurant_id, dish_id):
                                           restaurant=restaurant,
                                           extra_recipe="",
                                           day=now)
+                    new_daily.extra_recipe = json_content['extra_recipe']
+                    new_daily.save()
+
                     result = {'result': "True"}
         except Exception, e:
             pass
@@ -184,8 +185,14 @@ def get_today_dishes_as_dict(restaurant_id):
 
 
 def today_dishes(request, restaurant_id):
-    context = {'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
-               'categories': get_today_dishes_as_dict(restaurant_id)}
+    dishes_dict = get_today_dishes_as_dict(restaurant_id)
+    votes_dict = {dish['id']: Vote.get_votes_for_dish_id(dish['id']) for cat in dishes_dict.values() for dish in cat}
+    context = {
+               'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+               'categories': dishes_dict,
+               'votes': votes_dict,
+               'vote_choices': Vote.TASTE_VOTES_CHOICES,
+               }
     return render(request, 'webservice/menu.html', context)
 
 def today_dishes_json(request, restaurant_id):

@@ -4,9 +4,11 @@
 <title></title>
 <meta charset="utf-8" />
 {% load static %}
+{% load filters %}
 
 <!-- UIkit CSS -->
 <link rel="stylesheet" href="{% static 'webservice/uikit-rtl.min.css' %}" />
+<link rel="stylesheet" href="{% static 'webservice/menu.css' %}" />
 
 <!-- jQuery is required -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -14,6 +16,8 @@
 <!-- UIkit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
+
+<script src="{% static 'webservice/menu.js' %}"></script>
 
 <style>
 html {
@@ -35,7 +39,25 @@ html {
 	        <div class="uk-accordion-content">
 	        	<dl class="uk-description-list uk-padding-small uk-description-list-divider">
 					{% for item in items %}
-				    <dt>{{ item.name }}</dt>
+				    <dt>{{ item.name }}
+					<p class="share-icons" style="opacity: 1; display: block;">
+						<span class="count"><span></span></span>
+						<span class="list">
+									<strong>👅</strong>
+									{% for choice in vote_choices %}
+										<a class="{{ choice.1.1 }}" title="{{ choice.1.0 }}" uk-tooltip>{{ choice.1.2 }}</a>
+									{% endfor %}
+						</span>
+					</p>
+
+						<span class='current-reactions'>
+							{% for choice in vote_choices %}
+								<span class='{{ choice.1.1 }}'{% ifequal 0 votes|getitem:item.id|getitem:choice.0 %}style="display:none"{% endifequal %}>
+									<strong>{{ choice.1.2 }}</strong><em>{{ votes | getitem:item.id | getitem:choice.0 }}</em>
+								</span>
+							{% endfor %}
+						</span>
+					</dt>
 				    <dd>{{ item.short_desc }}</dd>
 					{% endfor %}
 				</dl>
