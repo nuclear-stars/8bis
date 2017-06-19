@@ -11,22 +11,22 @@
 	
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<!-- TODO - use jquery min -->
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	
-	<link rel="stylesheet" href="http://goodybag.github.io/bootstrap-notify/css/bootstrap-notify.css">
-	<script src="http://goodybag.github.io/bootstrap-notify/js/bootstrap-notify.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/css/bootstrap-notify.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.js"></script>
 	
 	<link rel="stylesheet" href="style.css">
 	<script type="text/javascript">
 		$(function () {
-			var AJAX_URL = "http://13.93.107.254/webservice"
+			//var AJAX_URL = "http://13.93.107.254/webservice"
+			var AJAX_URL = "http://1.1.0.41:8000/webservice"
 			var g_dishes = null;
 			var g_categories = null;
 			
-			function id_from_li(li, id_prefix) {
-				var li_classes = li.attr('class').split(' ');
+			function id_from_li(li, elem, id_prefix) {
+				var li_classes = li.attr(elem).split(' ');
 				var ret = "";
 				$.each(li_classes, function( index, value ) {
 					split_str = value.split("-");
@@ -39,31 +39,26 @@
 			}
 			
 			function category_id_from_li(li) {
-				return id_from_li(li, "category");
+				return id_from_li(li, "class", "category");
 			}
 			
 			function dish_id_from_li(li) {
-				return id_from_li(li, "dish");
+				return id_from_li(li, "id", "dish");
+			}
+			
+			function log(msg, level) {
+				$('.bottom-right').notify({
+					message: { text: msg },
+					type: level
+				}).show();
 			}
 			
 			function warning(msg) {
-				$.notify({
-					// options
-					message: msg
-				},{
-					// settings
-					type: 'danger'
-				});
+				log(msg, "error");
 			}
 			
 			function success(msg) {
-				$.notify({
-					// options
-					message: msg
-				},{
-					// settings
-					type: 'success'
-				});
+				log(msg, "success");
 			}
 			
 			function update_callbacks() {
@@ -73,15 +68,15 @@
 						var category_name = $(this).parent().parent().attr("id");
 						var li = $(ui.item[0]);
 						if (category_name == "chosen-dishes") {
-							add_dish_today(li);
+							set_dish_today(li, true);
 							return true;
 						}
-						orig_category_name = category_id_from_li(li);
+						orig_category_name = "category-" + category_id_from_li(li);
 						if (orig_category_name != category_name) {
 							warning('לא ניתן להחזיר ארוחה מהסוג הלא נכון');
-	
 							ui.sender.sortable("cancel");
 						}
+						set_dish_today(li, false);
 						// remove dish today
 						return true;
 			        }
@@ -89,7 +84,7 @@
 			    
 			    $("#dishes-to-choose ul.nav").on("click", "li", function() {
 				    $("#chosen-dishes ul").append($(this));
-				    add_dish_today($(this));
+				    set_dish_today($(this), true);
 			    });
 			    
 			    $("#chosen-dishes ul.nav").on("click", "li", function() {
@@ -113,32 +108,42 @@
 				    $('#editModal #dishNameEdit').attr('value', dish.name);
 				    $('#editModal #dishDescriptionEdit').attr('value', dish.short_desc);
 				    $('#editModal #dishRecipeEdit').html(dish.recipe);
+				    $('#editModal #dishUpdateID').attr('value', dish_id);
 				    
 				    $('#editModal').modal('show');
 			    });
 			}
 			
-			function add_dish_today(li) {
+			function set_dish_today(li, should_add) {
 				var dish_id = dish_id_from_li(li);
-				//alert(dish_id);
+				
+				url_suffix = "unset_day";
+				if (should_add) {
+					url_suffix = "set_day";
+				}
 				
 				$.ajax({
 					type: "POST",
-					url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/set_day",
-					data: {"day": "today"},
+					url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/" + url_suffix,
+					data: JSON.stringify({"day": "today"}),
+					dataType: 'json',
 					success: function(data) { 
-						if (data.success == "True") {
-							success("תפריט עודכן בהצלח");
+						if (data.result == "True") {
+							success("התפריט עודכן בהצלחה");
 						} else {
 							warning("שגיאה בעדכון התפריט. רענן ונסה שוב");
 						}
 					},
 					failure: function(errMsg) {
 					    warning(errMsg);
+					    ui.sender.sortable("cancel");
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					    warning(errorThrown);
+					    ui.sender.sortable("cancel");
 					}
 				});
 			}
-			
 		    
 		    
 		    $( document ).ready(function() {
@@ -156,13 +161,65 @@
 					}
 			    })
 			    
-				$.ajax({
+			    var today_dishes = null;
+			    
+			    $("#editModal button#dishUpdateRecipeToday").click(function() {
+				    dish_id = $('#editModal #dishUpdateID').attr('value');
+				    $.ajax({
+						type: "POST",
+						url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/set_extra_recipe",
+						data: JSON.stringify({"extra_recipe": $('#editModal #dishRecipeEdit').html()}),
+						dataType: 'json',
+						success: function(data) { 
+							if (data.result == "True") {
+								success("מתכון המנה עודכן בהצלח");
+							} else {
+								warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
+							}
+						},
+						failure: function(errMsg) {
+						    warning(errMsg);
+						    ui.sender.sortable("cancel");
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+						    warning(errorThrown);
+						    ui.sender.sortable("cancel");
+						}
+					});
+			    });
+			    
+			    $.ajax({
+				    type: "GET",
+				    url: AJAX_URL + "/restaurants/1/today/json",
+				    success: function(data) {
+					    //$.each(data.dishes, function( index, dish ) {
+						//    $("#chosen-dishes ul").append($("#dish-" + dish.id));
+					    //});
+					    today_dishes = data.dishes;
+				    },
+				    failure: function(errMsg) {
+					    warning(errMsg);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					    warning(errorThrown);
+					}
+			    })
+			    
+			    $.ajax({
 					type: "GET",
 					url: AJAX_URL + "/restaurants/1/json",
 					success: function(data) { 
 						g_dishes = data.dishes;
 						$.each(data.dishes, function( index, dish ) {
-							div_id = "category-" + index;
+							var today = false;
+							$.each(today_dishes, function (index, today_dish) {
+								if (today_dish.id == dish.id) {
+									today = true;
+									return;
+								}
+							});
+							
+							div_id = "category-" + dish.category;
 							li_id = "dish-" + dish.id;
 							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
 								$("#dishes-to-choose").append(
@@ -177,9 +234,13 @@
 								)
 							}
 							
+							ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
 							// Div already exists
-							$("#dishes-to-choose #" + div_id + " ul").append(
-								'<li class="active ' + div_id + ' ' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
+							if (today) {
+								ul_to_add_to = $("#chosen-dishes ul")
+							}
+							ul_to_add_to.append(
+								'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
 							)
 						});
 						
@@ -207,7 +268,7 @@
         </div>
       </div>
     </nav>
-    
+    <div class='notifications bottom-right'></div>
     <div class="container">
 		<div class="panel-group">
 	        <div class="panel panel-default">
@@ -293,10 +354,11 @@
 					<textarea class="form-control" id="dishRecipeEdit" placeholder="מתכון">פשוט שים מלא שמן</textarea>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" class="update">עדכן</button>
-					<button type="button" class="btn btn-primary" class="update">עדכן מתכון ליום זה בלבד</button>
+					<button type="button" class="btn btn-primary" class="update" id="dishUpdate">עדכן</button>
+					<button type="button" class="btn btn-primary" class="update" id="dishUpdateRecipeToday">עדכן מתכון ליום זה בלבד</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">בטל</button>
 				</div>
+				<input type="hidden" id="dishUpdateID" value="" />
 			</div>
 		</div> <!-- modal-dialog -->
 	</div> <!-- editModal -->

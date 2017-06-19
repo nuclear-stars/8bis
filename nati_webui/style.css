@@ -15,6 +15,15 @@ body {
 	margin: 20px !important;
 }
 
+.alert-success {
+	background-color: #5cb85c;
+}
+
+.alert-error {
+	background-color: #c9302c;
+	color: white;
+}
+
 #dishes-to-choose.panel-group .panel {
 	float: left;
 	width: 32%;
