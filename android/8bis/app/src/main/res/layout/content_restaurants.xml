@@ -4,12 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="a8bis.a8bis.Restaurants">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="a8bis.a8bis.RestaurantsActivity"
+    tools:showIn="@layout/app_bar">
 
-    <LinearLayout
-        android:layout_width="304dp"
-        android:layout_height="437dp"
-        android:orientation="horizontal"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"></LinearLayout>
 </android.support.constraint.ConstraintLayout>
