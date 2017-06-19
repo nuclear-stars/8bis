@@ -3,9 +3,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^categories', views.get_all_categories, name='get-all-categories'),
+    url(r'^categories/$', views.get_all_categories, name='get-all-categories'),
 
-    url(r'^restaurants', views.restaurants, name='restaurants'),
+    url(r'^restaurants/$', views.restaurants, name='restaurants'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/$', views.rest_detail, name='rest-detail'),
 
     # Get dishes
