@@ -84,7 +84,8 @@ def set_day(request, restaurant_id, dish_id):
             pass
     return JsonResponse(result)
 
-def today_dishes(request, restaurant_id):
+
+def get_today_dishes_as_dict(restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
     # Get the list of dishes that are associated for today
     today = datetime.datetime.now()
@@ -95,12 +96,27 @@ def today_dishes(request, restaurant_id):
     categories = {}
     for dish in daily_dishes:
         d = categories.get(dish.dish.category.name, [])
-        d.append(dish.dish)
+        d.append({
+            'name': dish.dish.name,
+            'short_desc': dish.dish.short_desc,
+            'recipe': dish.dish.recipe,
+            'category_id': dish.dish.category.id,
+            'extra_recipe': dish.extra_recipe,
+        })
         categories[dish.dish.category.name] = d
 
+    return categories
+
+
+def today_dishes(request, restaurant_id):
     context = {'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
-               'categories': categories}
+               'categories': get_today_dishes_as_dict(restaurant_id)}
     return render(request, 'webservice/menu.html', context)
+
+
+def today_dishes_json(request, restaurant_id):
+    return JsonResponse(get_today_dishes_as_dict(restaurant_id))
+
 
 def get_all_categories(request):
     all_cats = DishCategory.objects.all()

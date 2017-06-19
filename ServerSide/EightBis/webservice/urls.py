@@ -11,6 +11,7 @@ urlpatterns = [
     # Returns all data about a certain restaurant
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/$', views.rest_detail, name='rest-detail'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today$', views.today_dishes, name='rest-detail'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/json$', views.today_dishes_json, name='rest-detail-json'),
 
     # Get dishes
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/$', views.dish_detail, name='dish-detail'),
