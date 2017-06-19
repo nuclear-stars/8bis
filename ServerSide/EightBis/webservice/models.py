@@ -43,7 +43,8 @@ class Dish(models.Model):
         value = {'name': self.name,
                'votes': Vote.get_votes_for_dish_id(self.id),
                'id': self.id,
-                'short_desc': self.short_desc}
+                'short_desc': self.short_desc,
+                 'category': self.category.id}
         if with_recipe:
             value['recipe'] = self.recipe
         return value

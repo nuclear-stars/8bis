@@ -50,7 +50,7 @@ def dish_detail(request, restaurant_id, dish_id):
             return HttpResponse('Wrong JSON format', status=204)
 
     if request.method == 'GET':
-        return JsonResponse(dish.serialize())
+        return JsonResponse(dish.serialize(with_recipe=False))
 
 # restaurants/(?P<restaurant_id>[0-9]+)/dishes
 def add_dish_to_restaurant(request, restaurant_id):
@@ -66,6 +66,20 @@ def add_dish_to_restaurant(request, restaurant_id):
         except VoteSerializationException:
             result = {'result': 'False'}
         return JsonResponse(result)
+
+def remove_dish_from_restuarant(request, restaurant_id):
+    """
+    removes a dish from the list of dishes for a certain restaurant
+    """
+    result = {'result': 'False'}
+    try:
+        json_content = request.read()
+        dish = Dish.object.get(id=json_content['id'])
+        dish.delete()
+    except Exception, e:
+        pass
+    return JsonResponse(result)
+
 
 def set_day(request, restaurant_id, dish_id):
     """
@@ -118,7 +132,7 @@ def today_dishes_json(request, restaurant_id):
     return JsonResponse(get_today_dishes_as_dict(restaurant_id))
 
 
-def get_all_categories(request):
+def get_all_categories(request, restaurant_id):
     all_cats = DishCategory.objects.all()
     value = {'categories': {
         'id': cat.id,
