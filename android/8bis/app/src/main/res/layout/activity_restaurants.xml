@@ -12,13 +12,15 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context="a8bis.a8bis.RestaurantsActivity">
-        <include
-            layout="@layout/app_bar" />
 
-        <include layout="@layout/content_restaurants"
-            android:id="@+id/include2" />
+        <include layout="@layout/app_bar" />
+
+        <include
+            android:id="@+id/layout_restaurants"
+            layout="@layout/content_restaurants"
+            android:layout_height="wrap_content" />
 
     </android.support.design.widget.CoordinatorLayout>
 
