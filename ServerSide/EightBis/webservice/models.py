@@ -43,7 +43,8 @@ class Dish(models.Model):
         value = {'name': self.name,
                'votes': Vote.get_votes_for_dish_id(self.id),
                'id': self.id,
-                'short_desc': self.short_desc}
+                'short_desc': self.short_desc,
+                 'category': self.category.id}
         if with_recipe:
             value['recipe'] = self.recipe
         return value
@@ -69,9 +70,11 @@ class DailyDish(models.Model):
     """
     dish = models.ForeignKey(Dish)
     day = models.DateField()
-    extra_recipe = models.CharField(max_length=2000)
+    extra_recipe = models.CharField(max_length=2000, null=True)
     restaurant = models.ForeignKey(Restaurant)
 
+    def __str__(self):
+        return self.dish.name + " @ " + str(self.day)
 
 ################ LEAVING VOTES FOR NOW ##########################
 class Vote(models.Model):

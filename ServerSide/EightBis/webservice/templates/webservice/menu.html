@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<title></title>
+<meta charset="utf-8" />
+{% load static %}
+
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="{% static 'webservice/uikit-rtl.min.css' %}" />
+
+<!-- jQuery is required -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- UIkit JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
+
+<style>
+html {
+	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
+}
+</style>
+</head>
+<body>
+<div class="uk-padding-small">
+
+	<div class="uk-text-center uk-text-large" uk-alert>
+	    <p>תפריט היום - <strong>{{ today_date }}</strong></p>
+	</div>
+
+	<ul class="uk-background-muted uk-padding-small uk-panel" uk-accordion="multiple: true; active: 0">
+	    {% for category, items in categories.items %}
+		<li>
+	        <h3 class="uk-accordion-title uk-padding-small uk-background-secondary uk-light">{{ category }}</h3>
+	        <div class="uk-accordion-content">
+	        	<dl class="uk-description-list uk-padding-small uk-description-list-divider">
+					{% for item in items %}
+				    <dt>{{ item.name }}</dt>
+				    <dd>{{ item.short_desc }}</dd>
+					{% endfor %}
+				</dl>
+	        </div>
+        </li>
+		{% endfor %}
+	</ul>
+</div>
+</body>
+</html>
