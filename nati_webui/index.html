@@ -21,56 +21,170 @@
 	<link rel="stylesheet" href="style.css">
 	<script type="text/javascript">
 		$(function () {
-			function category_name_from_li(li) {
+			var AJAX_URL = "http://13.93.107.254/webservice"
+			var g_dishes = null;
+			
+			function id_from_li(li, id_prefix) {
 				var li_classes = li.attr('class').split(' ');
 				var ret = "";
 				$.each(li_classes, function( index, value ) {
 					split_str = value.split("-");
-					if ((split_str.length == 2) && (split_str[1] == "dish")) {
-						ret = split_str[0];
+					if ((split_str.length == 2) && (split_str[0] == id_prefix)) {
+						ret = split_str[1];
 						return ret;
 					}
 				});
 				return ret;
 			}
 			
-		    $(".connectedSortable").sortable({
-		        connectWith: ".connectedSortable",
-		        receive: function(event, ui)  {
-					var category_name = $(this).parent().parent().attr("id");
-					if (category_name == "chosen-dishes") {
+			function category_id_from_li(li) {
+				return id_from_li(li, "category");
+			}
+			
+			function dish_id_from_li(li) {
+				return id_from_li(li, "dish");
+			}
+			
+			function warning(msg) {
+				$.notify({
+					// options
+					message: msg
+				},{
+					// settings
+					type: 'danger'
+				});
+			}
+			
+			function success(msg) {
+				$.notify({
+					// options
+					message: msg
+				},{
+					// settings
+					type: 'success'
+				});
+			}
+			
+			function update_callbacks() {
+				$(".connectedSortable").sortable({
+			        connectWith: ".connectedSortable",
+			        receive: function(event, ui)  {
+						var category_name = $(this).parent().parent().attr("id");
+						var li = $(ui.item[0]);
+						if (category_name == "chosen-dishes") {
+							add_dish_today(li);
+							return true;
+						}
+						orig_category_name = category_id_from_li(li);
+						if (orig_category_name != category_name) {
+							warning('לא ניתן להחזיר ארוחה מהסוג הלא נכון');
+	
+							ui.sender.sortable("cancel");
+						}
+						// remove dish today
 						return true;
-					}
-					orig_category_name = category_name_from_li($(ui.item[0]));
-					if (orig_category_name != category_name) {
-						$('.bottom-right').notify({
-							message: { text: 'לא ניתן להחזיר ארוחה מהסוג הלא נכון' }
-						}).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
-
-						ui.sender.sortable("cancel");
-					}
-					return true;
-		        }
-		    });
-		    
-		    $("#chosen-dishes ul.nav").on("click", "li", function() {
-			    //orig_category_name = category_name_from_li($(this));
-			    //$("#" + orig_category_name + " ul").append($(this));
+			        }
+			    });
 			    
-			    $('#editModal').modal('show');
-		    });
+			    $("#dishes-to-choose ul.nav").on("click", "li", function() {
+				    $("#chosen-dishes ul").append($(this));
+				    add_dish_today($(this));
+			    });
+			    
+			    $("#chosen-dishes ul.nav").on("click", "li", function() {
+				    //orig_category_name = category_name_from_li($(this));
+				    //$("#" + orig_category_name + " ul").append($(this));
+				    
+				    dish_id = dish_id_from_li($(this));
+				    dish = null;
+				    
+				    $.each(g_dishes, function( index, dish_iter ) {
+					    if (dish_iter.id == dish_id) {
+						    dish = dish_iter;
+					    }
+					});
+					
+					if (dish == null) {
+						alert("No way");
+					}
+				    
+				    $('#editModal .modal-title').html("עריכה - " + dish.name);
+				    $('#editModal #dishNameEdit').attr('value', dish.name);
+				    $('#editModal #dishDescriptionEdit').attr('value', dish.short_desc);
+				    $('#editModal #dishRecipeEdit').html(dish.recipe);
+				    
+				    $('#editModal').modal('show');
+			    });
+			}
+			
+			function add_dish_today(li) {
+				var dish_id = dish_id_from_li(li);
+				//alert(dish_id);
+				
+				$.ajax({
+					type: "POST",
+					url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/set_day",
+					data: {"day": "today"},
+					success: function(data) { 
+						if (data.success == "True") {
+							success("תפריט עודכן בהצלח");
+						} else {
+							warning("שגיאה בעדכון התפריט. רענן ונסה שוב");
+						}
+					},
+					failure: function(errMsg) {
+					    warning(errMsg);
+					}
+				});
+			}
+			
 		    
-		    $("#dishes-to-choose ul.nav").on("click", "li", function() {
-			    $("#chosen-dishes ul").append($(this));
-		    });
+		    
+		    $( document ).ready(function() {
+				$.ajax({
+					type: "GET",
+					url: AJAX_URL + "/restaurants/1/json",
+					success: function(data) { 
+						g_dishes = data.dishes;
+						$.each(data.dishes, function( index, dish ) {
+							div_id = "category-" + index;
+							li_id = "dish-" + dish.id;
+							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
+								$("#dishes-to-choose").append(
+									'<div class="panel panel-default"> \
+					            <div class="panel-heading"> \
+					                <h4 class="panel-title"> \
+					                    <a href="#">' + dish.category + '</a> \
+					                </h4> \
+					            </div> \
+					            <div id="' + div_id + '" class=""><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
+					        </div>'
+								)
+							}
+							
+							// Div already exists
+							$("#dishes-to-choose #" + div_id + " ul").append(
+								'<li class="active ' + div_id + ' ' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
+							)
+						});
+						
+						update_callbacks();
+						
+					},
+					failure: function(errMsg) {
+					    warning(errMsg);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+					    warning(errorThrown);
+					}
+				});
+			});
 		});
 	</script>
 	<meta charset="UTF-8" />
 	<title>תפריט חדר אוכל</title>
 </head>
 <body>
-	<div class='notifications bottom-right'></div>
-	
 	<nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -99,6 +213,7 @@
 
 	<div class="container">
 		<div class="panel-group" id="dishes-to-choose">
+			<!--
 	        <div class="panel panel-default">
 	            <div class="panel-heading">
 	                <h4 class="panel-title">
@@ -144,7 +259,7 @@
 						</ul>
 	                </div>
 	            </div>
-	        </div>
+	        </div>-->
 		</div> <!-- #dishes-to-choose -->
 	</div> <!-- #container -->
 	
@@ -158,9 +273,9 @@
 					<h4 class="modal-title">עריכה - עוף בשמן</h4>
 				</div>
 				<div class="modal-body">
-					<input class="form-control" placeholder="שם המנה" value="עוף בשמן" />
-					<input class="form-control" placeholder="תיאור בקצרה" />
-					<textarea class="form-control" placeholder="מתכון">פשוט שים מלא שמן</textarea>
+					<input class="form-control" placeholder="שם המנה" value="עוף בשמן" id="dishNameEdit" />
+					<input class="form-control" placeholder="תיאור בקצרה" id="dishDescriptionEdit" />
+					<textarea class="form-control" id="dishRecipeEdit" placeholder="מתכון">פשוט שים מלא שמן</textarea>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" class="update">עדכן</button>

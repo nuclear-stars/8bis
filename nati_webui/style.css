@@ -11,6 +11,10 @@ body {
 	margin: 20px;
 }
 
+.panel-group {
+	margin: 20px !important;
+}
+
 #dishes-to-choose.panel-group .panel {
 	float: left;
 	width: 32%;
