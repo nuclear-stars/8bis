@@ -1,0 +1,134 @@
+<html>
+<head>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
+	<!-- Load Bootstrap RTL theme from RawGit -->
+<link rel="stylesheet" href="http://cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css">
+	
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- TODO - use jquery min -->
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="http://goodybag.github.io/bootstrap-notify/css/bootstrap-notify.css">
+	<script src="http://goodybag.github.io/bootstrap-notify/js/bootstrap-notify.js"></script>
+	
+	<link rel="stylesheet" href="style.css">
+	<script type="text/javascript">
+		$(function () {
+		    $(".connectedSortable").sortable({
+		        connectWith: ".connectedSortable",
+		        receive: function(event, ui)  {
+					//var category_name = ui.sender[0].parentNode.parentNode.id;
+					var li_classes = ui.item[0].classList;
+					var category_name = $(this).parent().parent().attr("id");
+					if (category_name == "chosen-dishes") {
+						return true;
+					}
+					$.each(li_classes, function( index, value ) {
+						split_str = value.split("-");
+						if ((split_str.length == 2) && (split_str[1] == "dish") && (split_str[0] != category_name)) {
+							$('.bottom-right').notify({
+								message: { text: 'לא ניתן להחזיר ארוחה מהסוג הלא נכון' }
+							}).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+
+							ui.sender.sortable("cancel");
+						}
+					});
+					return true;
+
+					//alert(targetList);
+					//alert(ui.item[0].classList);
+		        }
+		    });
+		});
+	</script>
+	<meta charset="UTF-8" />
+	<title>תפריט חדר אוכל</title>
+</head>
+<body>
+	<div class='notifications bottom-right'></div>
+	
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">תפריט חדר אוכל</a>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container">
+		<div class="panel-group">
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h4 class="panel-title">
+	                    <a href="#">התפריט של היום</a>
+	                </h4>
+	            </div>
+	            <div id="chosen-dishes" class="">
+	                <div class="panel-body">
+						<ul class="nav nav-pills connectedSortable">
+						</ul>
+	                </div>
+	            </div>
+	        </div>
+		</div>
+    </div>
+
+	<div class="container">
+		<div class="panel-group" id="dishes-to-choose">
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h4 class="panel-title">
+	                    <a href="#">סלטים</a>
+	                </h4>
+	            </div>
+	            <div id="salads" class="">
+	                <div class="panel-body">
+						<ul class="nav nav-pills connectedSortable">
+						    <li class="active salads-dish"><a href="#">סלט ירקות</a></li>
+						    <li class="active salads-dish"><a href="#">חסה</a></li>
+						    <li class="active salads-dish"><a href="#">כוסברה</a></li>
+						</ul>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h4 class="panel-title">
+	                    <a href="#">ארוחת בוקר</a>
+	                </h4>
+	            </div>
+	            <div id="breakfast" class="">
+	                <div class="panel-body">
+	                    <ul class="nav nav-pills connectedSortable">
+						    <li class="active breakfast-dish"><a href="#">חביתה</a></li>
+						    <li class="active breakfast-dish"><a href="#">שוקו</a></li>
+						</ul>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h4 class="panel-title">
+	                    <a href="#">פחמימות</a>
+	                </h4>
+	            </div>
+	            <div id="carbs" class="">
+	                <div class="panel-body">
+	                    <ul class="nav nav-pills connectedSortable">
+						    <li class="active carbs-dish"><a href="#">פסטה</a></li>
+						    <li class="active carbs-dish"><a href="#">אורז</a></li>
+						</ul>
+	                </div>
+	            </div>
+	        </div>
+		</div>
+	</div>
+</body>
+</html>
