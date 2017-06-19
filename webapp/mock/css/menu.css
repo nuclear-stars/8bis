@@ -1,0 +1,93 @@
+html {
+	background: url(background.jpg) fixed;
+}
+
+.share-icons
+{
+	direction: ltr;
+	display: none;
+	position: absolute;
+	left: 50px;
+	line-height: 46px;
+	padding-right: 59px;
+}
+.share-icons .count {
+	position: relative;
+}
+.share-icons .count > span
+{
+	z-index: 1000;
+	
+	position: absolute;
+	top: -25px;
+	float: left;
+	display: block;
+	border-radius: 4px;
+	background: #222;
+	color: #fff;
+	padding:0 5px;
+	line-height: 20px;
+	transition: transform .2s linear,background .2s ease,color .2s ease;
+	transform: scale(1) translate3d(0,0,0);
+}
+.share-icons .list
+{
+	position: relative;
+	bottom: 20px;
+	right: 0;
+	background: transparent;
+}
+.share-icons .list strong, .share-icons .list a
+{
+	position: relative;
+	display: inline-block;
+	width: 46px;
+	height: 46px;
+	font-size: 30px;
+	font-weight: normal;
+	text-align: center;
+	border-radius: 23px;
+	border:3px solid #ccc;
+	background: #fff;
+	color: #3fbad8;
+	margin: 0 0 6px;
+	font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji",
+	Times, Symbola, Aegyptus, Code2000, Code2001, Code2002, Musica, serif,
+	LastResort;
+}
+.share-icons .list strong
+{
+	cursor: default;
+}
+.share-icons .list a
+{
+	z-index: 500;
+	background: #ccc;
+	border:3px solid white;
+	color: #999;
+	transition: transform .2s linear,background .2s ease,color .2s ease;
+	transform: scale(0) translate3d(0,0,0);
+	opacity: 0;
+}
+.share-icons .list a:hover
+{
+	background: #aaa;
+	border: 3px solid #eee;
+	color: #fff;
+	text-decoration: none;
+}
+.share-icons .list:hover strong span, .share-icons .list.hover strong span
+{
+	opacity: 1;
+	transition-duration: .2s;
+}
+.share-icons .list:hover a, .share-icons .list.hover a
+{
+	transform: scale(1) translate3d(0,0,0);
+	transition-duration: .1s,.2s,.2s;
+	opacity: 1;
+}
+
+.share-icons .list a.selected {
+	background: #333!important;
+}

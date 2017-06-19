@@ -104,7 +104,58 @@ def set_day(request, restaurant_id, dish_id):
                     new_daily.save()
                     result = {'result': "True"}
         except Exception, e:
-            import pdb; pdb.set_trace()
+            pass
+    return JsonResponse(result)
+
+@csrf_exempt
+def set_extra_recipe(request, restaurant_id, dish_id):
+    """
+    Add this certain dish to the list of dishes for a certain day
+    for this restaurant
+    """
+    result = {'result': 'False'}
+    if request.method == "POST":
+        try:
+            restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+            dish = get_object_or_404(Dish, id=dish_id)
+            json_content = json.loads(request.read())
+            if json_content['day'] == 'today':
+                now = datetime.datetime.now()
+
+                # Check if this dish is already set, if not we can't add a recepie
+                if DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month).count() != 0:
+                    new_daily = DailyDish(dish=dish,
+                                          restaurant=restaurant,
+                                          extra_recipe="",
+                                          day=now)
+                    result = {'result': "True"}
+        except Exception, e:
+            pass
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def unset_day(request, restaurant_id, dish_id):
+    """
+    Add this certain dish to the list of dishes for a certain day
+    for this restaurant
+    """
+    result = {'result': 'False'}
+    if request.method == "POST":
+        try:
+            restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+            dish = get_object_or_404(Dish, id=dish_id)
+            json_content = json.loads(request.read())
+            if json_content['day'] == 'today':
+                now = datetime.datetime.now()
+
+                # Make sure this dish doesn't already exist in that days dishes
+                dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
+                if len(dish) > 0:
+                    dish.delete()
+
+        except Exception, e:
+            pass
     return JsonResponse(result)
 
 
@@ -125,6 +176,7 @@ def get_today_dishes_as_dict(restaurant_id):
             'recipe': dish.dish.recipe,
             'category_id': dish.dish.category.id,
             'extra_recipe': dish.extra_recipe,
+            'id': dish.dish.id
         })
         categories[dish.dish.category.name] = d
 
@@ -136,16 +188,19 @@ def today_dishes(request, restaurant_id):
                'categories': get_today_dishes_as_dict(restaurant_id)}
     return render(request, 'webservice/menu.html', context)
 
-
 def today_dishes_json(request, restaurant_id):
-    return JsonResponse(get_today_dishes_as_dict(restaurant_id))
+     category_to_dish = get_today_dishes_as_dict(restaurant_id)
+     value = {'dishes': []}
+     for cat, dishes in category_to_dish.items():
+         for dish in dishes:
+             value['dishes'].append(dish)
+     return JsonResponse(value)
 
 
 def get_all_categories(request, restaurant_id):
     all_cats = DishCategory.objects.all()
     value = {'categories': {
-        'id': cat.id,
-        'name': cat.name
-    } for cat in all_cats}
+        cat.id: cat.name  for cat in all_cats
+    }}
     return JsonResponse(value)
 

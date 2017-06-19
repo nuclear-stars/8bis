@@ -14,6 +14,7 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+@python_2_unicode_compatible
 class DishCategory(models.Model):
     name = models.CharField(max_length=100)
 
@@ -64,6 +65,7 @@ class Dish(models.Model):
         except Exception, e:
             raise VoteSerializationException
 
+@python_2_unicode_compatible
 class DailyDish(models.Model):
     """
     Represents one connection of a meal to a day
