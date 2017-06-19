@@ -63,6 +63,15 @@ class Dish(models.Model):
         except Exception, e:
             raise VoteSerializationException
 
+class DailyDish(models.Model):
+    """
+    Represents one connection of a meal to a day
+    """
+    dish = models.ForeignKey(Dish)
+    day = models.DateField()
+    extra_recipe = models.CharField(max_length=2000)
+    restaurant = models.ForeignKey(Restaurant)
+
 
 ################ LEAVING VOTES FOR NOW ##########################
 class Vote(models.Model):

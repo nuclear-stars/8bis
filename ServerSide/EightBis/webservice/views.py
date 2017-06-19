@@ -8,7 +8,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 
-from .models import Restaurant, Dish, Vote, VoteSerializationException, DishCategory
+from .models import Restaurant, Dish, Vote, VoteSerializationException, DishCategory, \
+                    DailyDish
 
 # Create your views here.
 def index(request):
@@ -63,6 +64,26 @@ def add_dish_to_restaurant(request, restaurant_id):
         except VoteSerializationException:
             result = {'result': 'False'}
         return JsonResponse(result)
+
+def set_day(request, restaurant_id, dish_id):
+    """
+    Add this certain dish to the list of dishes for a certain day
+    for this restaurant
+    """
+    result = {'result': 'False'}
+    if request.method == "POST":
+        try:
+            new_daily = DailyDish(dish=dish_id,
+                                  restaurant=restaurant_id,
+                                  extra_recipe="")
+            new_daily.save()
+            result = {'result': "True"}
+        except Exception, e:
+            pass
+    return JsonResponse(result)
+
+def today_dishes(request, restaurant_id):
+    return JsonResponse({"A":"A"})
 
 def get_all_categories(request):
     all_cats = DishCategory.objects.all()
