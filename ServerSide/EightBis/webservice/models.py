@@ -96,9 +96,20 @@ class Vote(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, null=True)
 
     @staticmethod
+    def convert_char_to_emoji(char_code):
+        for code, (name_str, _, emoji) in Vote.TASTE_VOTES_CHOICES:
+            if code == char_code:
+                return name_str, emoji
+
+    @staticmethod
     def get_votes_count_for_days_range(start_day, end_day):
         votes_count = Vote.objects.filter(vote_time__range=[start_day.strftime("%Y-%m-%d"), end_day.strftime("%Y-%m-%d")]).values('vote_time').annotate(total=Count('vote_time')).order_by("total")
         return {vote['vote_time'].strftime("%Y-%m-%d"): vote['total'] for vote in votes_count}
+
+    @staticmethod
+    def get_reaction_count_for_day(day):
+        reaction_count = Vote.objects.filter(vote_time=day).values('vote_selection').annotate(total=Count('vote_selection')).order_by("total")
+        return {Vote.convert_char_to_emoji(vote['vote_selection']): vote['total'] for vote in reaction_count}
 
     @staticmethod
     def get_votes_for_dish_id_and_day(dish_id, day):
