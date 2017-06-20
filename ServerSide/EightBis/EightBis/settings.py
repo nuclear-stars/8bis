@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'wa*0t_#@^@)89p#=w&j#x_b7@e@we-3(sr&1lle!)q^^q3ujp9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['1.1.0.41', '127.0.0.1']
+ALLOWED_HOSTS = ['eightbis.westeurope.cloudapp.azure.com', '127.0.0.1']
 
 
 # Application definition
