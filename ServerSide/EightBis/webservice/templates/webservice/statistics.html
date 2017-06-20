@@ -1,0 +1,118 @@
+<html>
+<head>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="print" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
+	<!-- Load Bootstrap RTL theme from RawGit -->
+	<link rel="stylesheet" href="http://cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css">
+	<link rel="stylesheet" href="http://cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css" media="print">
+	
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" media="print">
+		
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/css/bootstrap-notify.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.js"></script>
+	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+		
+		function drawChart() {
+			var data = google.visualization.arrayToDataTable([
+			  ['Task', 'Hours per Day'],
+			  ['Work',     11],
+			  ['Eat',      2],
+			  ['Commute',  2],
+			  ['Watch TV', 2],
+			  ['Sleep',    7]
+			]);
+			
+			var options = {
+			  title: 'קטגוריות אוכל שדורגו היום'
+			};
+			
+			var chart = new google.visualization.PieChart(document.getElementById('food_categories_piechart'));
+			
+			chart.draw(data, options);
+			
+			var data = new google.visualization.DataTable();
+			data.addColumn('date', 'תאריך');
+			data.addColumn('number', 'כמות דירוגים');
+			
+			data.addRows([
+				{% for date, amount in votes.items %}
+				[new Date({{ date.0 }}, {{ date.1 }}, {{ date.2 }}), {{ amount }}],
+				{% endfor %}
+			]);
+			
+			var options = {
+				title: 'כמות דירוגים ביום',
+				hAxis: {
+					title: 'תאריך',
+					format: 'd.M'
+				},
+				vAxis: {
+					title: 'כמות דירוגים'
+				}
+			};
+			
+			var chart = new google.visualization.ColumnChart(document.getElementById('rating_per_day_piechart'));
+			
+			chart.draw(data, options);
+		}
+		
+		
+		
+	</script>
+	
+	<link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8" />
+	<title>סטטיסטיקות חדר אוכל</title>
+</head>
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#"><img src="8bis.png" /></a>
+		</div>
+		<div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li><a href="../">ניהול תפריט</span></a></li>
+				<li class="active"><a href=".">סטטיסטיקות</span></a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+		<ul class="nav navbar-nav navbar-left">
+			<li><a href="#" onclick="javascript:window.print();" id="print_link"><span class="glyphicon glyphicon-print"></span> הדפס</a></li>
+		</ul>
+	</div>
+    </nav>
+    <div class='notifications bottom-right'></div>
+    <div class="container">
+		<div class="panel-group">
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                <h4 class="panel-title">
+	                    <a href="#">סטטיסטיקות</a>
+	                </h4>
+	            </div>
+	            <div>
+	                <div class="panel-body">
+						<ul class="nav nav-pills connectedSortable">
+							<div id="food_categories_piechart" style="width: 450px; height: 250px; float: right;"></div>
+							<div id="rating_per_day_piechart" style="width: 550px; height: 250px; float:right; margin-right: 20px;"></div>
+						</ul>
+	                </div>
+	            </div>
+	        </div>
+		</div>
+    </div>
+</body>
+</html>
