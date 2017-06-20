@@ -101,6 +101,7 @@ class Vote(models.Model):
     @staticmethod
     def add_vote_from_json(jsoned_vote):
         try:
+            import pdb; pdb.set_trace()
             vote_values = json.loads(jsoned_vote)
             dish_id = vote_values['dish_id']
             username = vote_values['username']

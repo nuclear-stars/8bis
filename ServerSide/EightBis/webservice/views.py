@@ -51,6 +51,7 @@ def dish_update(request, restaurant_id, dish_id):
     return JsonResponse(result)
 
 # restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/$
+@csrf_exempt
 def dish_detail(request, restaurant_id, dish_id):
     dish = get_object_or_404(Dish, id=int(dish_id))
 
@@ -221,10 +222,10 @@ def today_dishes(request, restaurant_id):
     return render(request, 'webservice/menu.html', context)
 
 def today_dishes_print(request, restaurant_id):
-    today_dishes = get_today_dishes_as_list(restaurant_id)
+    dishes_dict = get_today_dishes_as_dict(restaurant_id)
     context = {
         'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
-        'dishes': today_dishes,
+        'categories': dishes_dict,
     }
     return render(request, 'webservice/printable_menu.html', context)
 

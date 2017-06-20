@@ -24,21 +24,23 @@
 <body>
 	<h1>תפריט חדר אוכל - {{ today_date }}</h1>
 	<table>
-		
+
+		{% for category, items in categories.items %}
 		<tr>
-			<th colspan="3"><h2 style="margin: 0; padding: 0;">ארוחת בוקר</h2></th>
+			<th colspan="3"><h2 style="margin: 0; padding: 0;">{{ category }}</h2></th>
 		</tr>
 		<tr>
 			<th style="width: 20%;">שם</td>
 			<th style="width: 30%;">תיאור</th>
 			<th>מתכון</th>
 		</th>
-		{% for dish in dishes %}
+		{% for dish in items %}
 		<tr>
 			<td>{{ dish.name }}</td>
 			<td>{{ dish.short_desc }}</td>
 			<td>{{ dish.recipe }}</td>
 		</tr>
+		{% endfor %}
 		{% endfor %}
 	</table>
 	<script type="text/javascript">
