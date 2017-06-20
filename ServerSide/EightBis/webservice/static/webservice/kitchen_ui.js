@@ -82,13 +82,17 @@ $(function () {
 		    set_dish_today($(this), true);
 		    $("#chosen-dishes ul").append($(this));
 	    });
+
+		$("#chosen-dishes ul.nav i").click(function() {
+			var li = $(this).parent().parent();
+			var orig_category = category_id_from_li(li);
+		    $("#category-" + orig_category + " ul").append(li);
+			set_dish_today(li, false);
+		});
 	    
 	    $("#chosen-dishes ul.nav").on("click", "li", function() {
-		    //orig_category_name = category_name_from_li($(this));
-		    //$("#" + orig_category_name + " ul").append($(this));
-		    
-		    dish_id = dish_id_from_li($(this));
-		    dish = null;
+		    var dish_id = dish_id_from_li($(this));
+		    var dish = null;
 		    
 		    $.each(g_dishes, function( index, dish_iter ) {
 			    if (dish_iter.id == dish_id) {
@@ -273,8 +277,8 @@ $(function () {
 								}
 							});
 
-							div_id = "category-" + dish.category;
-							li_id = "dish-" + dish.id;
+							var div_id = "category-" + dish.category;
+							var li_id = "dish-" + dish.id;
 							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
 								$("#dishes-to-choose").append(
 									'<div class="panel panel-default" id="' + div_id + '"> \
@@ -288,13 +292,13 @@ $(function () {
 								)
 							}
 
-							ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
+							var ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
 							// Div already exists
 							if (today) {
 								ul_to_add_to = $("#chosen-dishes ul")
 							}
 							ul_to_add_to.append(
-								'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
+								'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + ' <i class="glyphicon" style="margin: 0 !important">&#57364;</i></a></li>'
 							)
 						});
 
@@ -315,7 +319,7 @@ $(function () {
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
 			}
-	    }) // $.ajax
+	    }); // $.ajax
 	    
 
 		
