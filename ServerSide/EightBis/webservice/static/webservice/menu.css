@@ -4,31 +4,38 @@ html {
 
 .share-icons
 {
-	direction: ltr;
-	display: none;
+        position: relative;
+        direction: ltr;
+	margin: 0;
+}
+.share-icons > span
+{
+	text-align: left;
+        position: absolute;
+        top: 30pt;
+        left: 30pt;
+}
+.share-icons .count
+{
 	position: absolute;
-	left: 50px;
-	line-height: 46px;
-	padding-right: 59px;
+	top: 13pt;
 }
-.share-icons .count {
-	position: relative;
-}
+
 .share-icons .count > span
 {
-	z-index: 1000;
-	
-	position: absolute;
-	top: -25px;
-	float: left;
-	display: block;
-	border-radius: 4px;
-	background: #222;
-	color: #fff;
-	padding:0 5px;
-	line-height: 20px;
-	transition: transform .2s linear,background .2s ease,color .2s ease;
-	transform: scale(1) translate3d(0,0,0);
+        z-index: 1000;
+        position: relative;
+        top: -45px;
+        float: left;
+        display: block;
+        border-radius: 4pt;
+        background: #222;
+        color: #fff;
+        padding:0 5pt;
+        line-height: 20pt;
+	font-size:20pt;
+        transition: transform .2s linear,background .2s ease,color .2s ease;
+        transform: scale(1) translate3d(0,0,0);
 }
 .share-icons .list
 {
@@ -41,16 +48,16 @@ html {
 {
 	position: relative;
 	display: inline-block;
-	width: 46px;
-	height: 46px;
-	font-size: 30px;
+	width: 46pt;
+	height: 46pt;
+	font-size: 30pt;
 	font-weight: normal;
 	text-align: center;
-	border-radius: 23px;
+	border-radius: 23pt;
 	border:3px solid #ccc;
 	background: #fff;
 	color: #3fbad8;
-	margin: 0 0 6px;
+	margin: 0 0 6pt;
 	font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji",
 	Times, Symbola, Aegyptus, Code2000, Code2001, Code2002, Musica, serif,
 	LastResort;
@@ -94,4 +101,33 @@ html {
 
 .current-reactions {
 	margin-right: 5px;
+	font-size: 15pt;
 }
+
+nav[uk-navbar] {
+        height: 50px!important;
+}
+
+.navbar-container-header, nav[uk-navbar], nav[uk-navbar] > div {
+        background:#222!important;
+}
+nav[uk-navbar] img {
+        width: auto!important;
+        height: auto!important;
+}
+
+dt {
+        margin-right: 10px;
+        font-size: 20pt;
+}
+dt > strong {
+        font-size: 25pt;
+        line-height: auto;
+}
+
+dd {
+        margin-right: 10px;
+        font-size: 20pt;
+        line-height: auto;
+}
+
