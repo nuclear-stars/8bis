@@ -298,3 +298,6 @@ def get_all_categories(request, restaurant_id):
     }}
     return JsonResponse(value)
 
+
+def manage_view(request, restaurant_id):
+    return render(request, 'webservice/kitchen_ui.html', {})

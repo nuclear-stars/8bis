@@ -1,0 +1,83 @@
+body {
+  padding-top: 50px;
+}
+
+.navbar-brand {
+  padding: 7px !important;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.bs-example {
+	margin: 20px;
+}
+
+.panel-group {
+	margin: 20px !important;
+}
+
+.alert-success {
+	background-color: #5cb85c;
+}
+
+.alert-error {
+	background-color: #c9302c;
+	color: white;
+}
+
+#dishes-to-choose.panel-group .panel {
+	float: left;
+	width: 32%;
+	margin-right: 5px;
+	margin-top: 0 !important;
+}
+
+.panel-group .panel .nav {
+	min-height: 50px;
+}
+
+#chosen-dishes .nav {
+	min-height: 200px;
+}
+
+li.active a .glyphicon {
+	margin-left: 5px;
+	display: none;
+}
+
+input.form-control {
+	margin-bottom: 10px;
+}
+
+#datepicker_placeholder a {
+	padding: 10px 0;
+}
+
+#datepicker_placeholder input.form-control {
+	margin: 0 !important;
+}
+
+#chosen-dishes .nav li.active a .glyphicon {
+	display: inline !important;
+}
+
+#category-3 h4.panel-title a {
+	color: #5cb85c;
+}
+li.active.category-3 a {
+	background-color: #5cb85c !important;
+}
+
+#category-2 h4.panel-title a {
+	color: #f0ad4e;
+}
+li.active.category-2 a {
+	background-color: #f0ad4e !important;
+}
+
+li.active.category-1 a {
+	background-color: #0275d8 !important;
+}
