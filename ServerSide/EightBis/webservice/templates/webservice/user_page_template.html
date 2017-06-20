@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<title></title>
+<meta charset="utf-8" />
+{% load static %}
+{% load filters %}
+
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="{% static 'webservice/uikit-rtl.min.css' %}" />
+
+{% block css %}{% endblock %}
+
+<!-- jQuery is required -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- UIkit JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
+
+<script type="text/javascript">
+	var $username = '{{ username }}';
+	var $dateString = '{{ today_date }}';
+</script>
+
+{% block js %}{% endblock %}
+
+<style>
+html {
+	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
+}
+
+nav[uk-navbar] {
+	height: 50px!important;
+}
+
+.navbar-container-header, nav[uk-navbar], nav[uk-navbar] > div {
+	background:#222!important;
+}
+nav[uk-navbar] img {
+	width: auto!important;
+	height: auto!important;
+}
+</style>
+</head>
+<body>
+
+<div class="uk-container uk-container-expand navbar-container-header"><nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-right uk-light">
+    	<a href=""><img src="{% static 'webservice/images/8bis.png' %}" alt="8bis" class="uk-navbar-item uk-logo" /></a>
+    </div>
+    <div class="uk-navbar-center uk-light">
+    	תפריט היום - <strong>{{ today_date }}</strong>
+    </div>
+    <div class="uk-navbar-left uk-light">
+        {% block navbar_user_context %}{% endblock %}
+    </div>
+</nav></div>
+
+<div class="uk-padding-small">
+	{%block contents %}{% endblock %}
+</div>
+</body>
+</html>

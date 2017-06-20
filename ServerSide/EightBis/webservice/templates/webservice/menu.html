@@ -1,26 +1,37 @@
-<!DOCTYPE html>
-<html dir="rtl">
-<head>
-<title></title>
-<meta charset="utf-8" />
+{% extends "webservice/user_page_template.html" %}
+
 {% load static %}
 {% load filters %}
 
-<!-- UIkit CSS -->
-<link rel="stylesheet" href="{% static 'webservice/uikit-rtl.min.css' %}" />
+
+{% block css %}
 <link rel="stylesheet" href="{% static 'webservice/menu.css' %}" />
 
-<!-- jQuery is required -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+html {
+	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
+}
 
-<!-- UIkit JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
+nav[uk-navbar] {
+	height: 50px!important;
+}
 
-	<script type="text/javascript">
-		var $username = '{{ username }}';
-		var $dateString = '{{ today_date }}';
-	</script>
+.navbar-container-header, nav[uk-navbar], nav[uk-navbar] > div {
+	background:#222!important;
+}
+nav[uk-navbar] img {
+	width: auto!important;
+	height: auto!important;
+}
+</style>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	var $username = '{{ username }}';
+	var $dateString = '{{ today_date }}';
+</script>
 <script src="{% static 'webservice/menu.js' %}"></script>
 
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async='async'></script>
@@ -37,20 +48,13 @@
       }
     }]);
   </script>
+{% endblock %}
+{% block navbar_user_context %}
+    <div class='uk-navbar-item'>מחובר כ-{{ username }}</div>
+    <!--<a href="/webservice/logout" uk-icon="icon: sign-out" class='uk-navbar-item'></a>-->
+{% endblock %}
 
-<style>
-html {
-	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
-}
-</style>
-</head>
-<body>
-<div class="uk-padding-small">
-
-	<div class="uk-text-center uk-text-large" uk-alert>
-	    <p>תפריט היום - <strong>{{ today_date }}</strong></p>
-	</div>
-
+{% block contents %}
 	<ul class="uk-background-muted uk-padding-small uk-panel" uk-accordion="multiple: true; active: 0">
 	    {% for category, items in categories.items %}
 		<li>
@@ -86,6 +90,4 @@ html {
         </li>
 		{% endfor %}
 	</ul>
-</div>
-</body>
-</html>
+{% endblock %}
