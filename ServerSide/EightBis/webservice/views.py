@@ -3,9 +3,7 @@ from __future__ import unicode_literals
 import json
 import datetime
 from django.shortcuts import render
-
 from django.views.decorators.csrf import csrf_exempt
-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -36,7 +34,24 @@ def rest_detail(request, restaurant_id):
     }
     return JsonResponse(value)
 
+def dish_update(request, restaurant_id, dish_id):
+    dish = get_object_or_404(Dish, id=int(dish_id))
+    restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
+
+    result = {'result': 'False'}
+    try:
+        values = json.loads(request.read())
+        dish.recipe = values['recipe']
+        dish.name = values['name']
+        dish.short_desc = values['short_desc']
+        dish.save()
+        result = {'result': 'True'}
+    except Exception, e:
+        pass
+    return JsonResponse(result)
+
 # restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/$
+@csrf_exempt
 def dish_detail(request, restaurant_id, dish_id):
     dish = get_object_or_404(Dish, id=int(dish_id))
 
@@ -123,11 +138,12 @@ def set_extra_recipe(request, restaurant_id, dish_id):
                 now = datetime.datetime.now()
 
                 # Check if this dish is already set, if not we can't add a recepie
-                if DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month).count() != 0:
-                    new_daily = DailyDish(dish=dish,
-                                          restaurant=restaurant,
-                                          extra_recipe="",
-                                          day=now)
+                daily_dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
+                if len(daily_dish) != 0:
+                    new_daily = daily_dish[0]
+                    new_daily.extra_recipe = json_content['extra_recipe']
+                    new_daily.save()
+
                     result = {'result': "True"}
         except Exception, e:
             pass
@@ -153,6 +169,7 @@ def unset_day(request, restaurant_id, dish_id):
                 dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
                 if len(dish) > 0:
                     dish.delete()
+                    result = {'result': 'True'}
 
         except Exception, e:
             pass
@@ -170,30 +187,50 @@ def get_today_dishes_as_dict(restaurant_id):
     categories = {}
     for dish in daily_dishes:
         d = categories.get(dish.dish.category.name, [])
+
+        recipe = dish.dish.recipe
+        if dish.extra_recipe is not None and len(dish.extra_recipe) > 0:
+            recipe = dish.extra_recipe
         d.append({
             'name': dish.dish.name,
             'short_desc': dish.dish.short_desc,
-            'recipe': dish.dish.recipe,
+            'recipe': recipe,
             'category_id': dish.dish.category.id,
-            'extra_recipe': dish.extra_recipe,
             'id': dish.dish.id
         })
         categories[dish.dish.category.name] = d
 
     return categories
 
+def get_today_dishes_as_list(restaurant_id):
+    category_to_dish = get_today_dishes_as_dict(restaurant_id)
+    result_list = []
+    for cat, dishes in category_to_dish.items():
+         for dish in dishes:
+             result_list.append(dish)
+    return result_list
 
 def today_dishes(request, restaurant_id):
-    context = {'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
-               'categories': get_today_dishes_as_dict(restaurant_id)}
+    dishes_dict = get_today_dishes_as_dict(restaurant_id)
+    votes_dict = {dish['id']: Vote.get_votes_for_dish_id(dish['id']) for cat in dishes_dict.values() for dish in cat}
+    context = {
+               'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+               'categories': dishes_dict,
+               'votes': votes_dict,
+               'vote_choices': Vote.TASTE_VOTES_CHOICES,
+               }
     return render(request, 'webservice/menu.html', context)
 
+def today_dishes_print(request, restaurant_id):
+    dishes_dict = get_today_dishes_as_dict(restaurant_id)
+    context = {
+        'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+        'categories': dishes_dict,
+    }
+    return render(request, 'webservice/printable_menu.html', context)
+
 def today_dishes_json(request, restaurant_id):
-     category_to_dish = get_today_dishes_as_dict(restaurant_id)
-     value = {'dishes': []}
-     for cat, dishes in category_to_dish.items():
-         for dish in dishes:
-             value['dishes'].append(dish)
+     value = {'dishes': get_today_dishes_as_list(restaurant_id)}
      return JsonResponse(value)
 
 

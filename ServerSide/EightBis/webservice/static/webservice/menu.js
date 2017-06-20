@@ -22,13 +22,21 @@ function setStorageValue(key, val) {
 }
 
 function changeReactionsStatus(dishId, icons) {
-	var reactionArr = new Array();
+	var reactionArr = {};
 	icons.find('.list a').each(function() {
-		var type = this.className.replace('selected', '').replace(' ', '');
-		setStorageValue(dishId + '-' + type, $(this).hasClass('selected'));
-		reactionArr[type] = $(this).hasClass('selected');
+		reactionArr[$(this).data('reaction-id')] = $(this).hasClass('selected');
 	});
-	// todo submit reactionArr with ajax
+	$.post({
+		// FIXME formatDate() is going to be problematic after midnight
+	   data: JSON.stringify({'votes': reactionArr, 'dishId': dishId, 'date': formatDate()}),
+	   dataType: 'json',
+	   url: "/webservice/restaurants/1/dishes/" + dishId + "/",
+	   success: function(msg){
+		 icons.find('.list a').each(function() {
+			setStorageValue(dishId + '-' + $(this).data('reaction-id'), $(this).hasClass('selected'));
+		 });
+	   }
+	});
 }
 
 function updateReactionsCount(icons) {
@@ -43,9 +51,8 @@ function updateReactionsCount(icons) {
 
 $(function() {
 	$('.share-icons .list a').each(function() {
-		var type = this.className.replace('selected', '').replace(' ', '');
 		var dishId = $(this).closest('dt').data('dish-id');
-		if (getStorageValue(dishId + "-" + type) == "true") {
+		if (getStorageValue(dishId + "-" + $(this).data('reaction-id')) == "true") {
 			$(this).addClass('selected');
 		}
 		updateReactionsCount($(this).closest('.share-icons'));
@@ -53,7 +60,7 @@ $(function() {
 		$(this).click(function() {
 			var isOn = !$(this).hasClass('selected');
 			$(this).toggleClass('selected');
-			var reaction = $(this).closest('.share-icons').siblings('.current-reactions').find('.' + type + ' > em');
+			var reaction = $(this).closest('.share-icons').siblings('.current-reactions').find('.reaction-' + $(this).data('reaction-id') + ' > em');
 			newVal = isOn ? parseInt(reaction.text()) + 1 : parseInt(reaction.text()) - 1;
 			reaction.text(newVal);
 			if (newVal > 0) {

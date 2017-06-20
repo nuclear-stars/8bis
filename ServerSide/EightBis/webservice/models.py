@@ -81,9 +81,12 @@ class DailyDish(models.Model):
 ################ LEAVING VOTES FOR NOW ##########################
 class Vote(models.Model):
     TASTE_VOTES_CHOICES = (
-        (u'1', u'Happy'),
-        (u'2', u'Vomit'),
-        (u'3', u'Bored')
+        (u'1', (u'טעים!', u'tasty', u'😍')),
+        (u'2', (u'לא משהו', u'disliked', u'😣')),
+        (u'3', (u'בריא', u'healthy', u'🌿')),
+        (u'4', (u'שמן', u'fat', u'🍔')),
+        (u'5', (u'מפתיע!', u'surprising', u'🌟')),
+        (u'6', (u'לא נשאר לי', u'none-left', u'🛑')),
     )
     username = models.CharField(max_length=200)
     vote_time = models.DateField(auto_now=True)
@@ -98,6 +101,7 @@ class Vote(models.Model):
     @staticmethod
     def add_vote_from_json(jsoned_vote):
         try:
+            import pdb; pdb.set_trace()
             vote_values = json.loads(jsoned_vote)
             dish_id = vote_values['dish_id']
             username = vote_values['username']
