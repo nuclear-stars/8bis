@@ -11,23 +11,6 @@
 html {
 	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
 }
-
-nav[uk-navbar] {
-	height: 50px!important;
-}
-
-.navbar-container-header, nav[uk-navbar], nav[uk-navbar] > div {
-	background:#222!important;
-}
-nav[uk-navbar] img {
-	width: auto!important;
-	height: auto!important;
-}
-
-dt > strong {
-	font-size: 20pt;
-	line-height: auto;
-}
 </style>
 
 {% endblock %}
@@ -49,7 +32,7 @@ dt > strong {
 	<ul class="uk-background-muted uk-padding-small uk-panel" uk-accordion="multiple: true">
 	    {% for category, items in categories.items %}
 		<li class='uk-open'>
-	        <h3 class="uk-accordion-title uk-padding-small uk-background-secondary uk-light">{{ category }}</h3>
+	        <h3 class="uk-accordion-title uk-padding-small uk-background-secondary uk-light uk-text-large">{{ category }}</h3>
 	        <div class="uk-accordion-content">
 	        	<dl class="uk-description-list uk-description-list-divider">
 					{% for item in items %}
