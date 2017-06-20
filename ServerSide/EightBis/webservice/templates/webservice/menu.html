@@ -22,6 +22,21 @@
 	</script>
 <script src="{% static 'webservice/menu.js' %}"></script>
 
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async='async'></script>
+  <script>
+    var OneSignal = window.OneSignal || [];
+    OneSignal.push(["init", {
+      appId: "e0ce05a9-e349-4ebb-8911-4b19e5c9bb80",
+      autoRegister: false, /* Set to true to automatically prompt visitors */
+      httpPermissionRequest: {
+        enable: true
+      },
+      notifyButton: {
+          enable: true /* Set to false to hide */
+      }
+    }]);
+  </script>
+
 <style>
 html {
 	background: url(" {% static 'webservice/images/background.jpg' %}") fixed;
