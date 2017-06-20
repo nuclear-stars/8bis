@@ -78,7 +78,7 @@ class DailyDish(models.Model):
     def __str__(self):
         return self.dish.name + " @ " + str(self.day)
 
-################ LEAVING VOTES FOR NOW ##########################
+@python_2_unicode_compatible
 class Vote(models.Model):
     TASTE_VOTES_CHOICES = (
         (u'1', (u'טעים!', u'tasty', u'😍')),
@@ -89,7 +89,7 @@ class Vote(models.Model):
         (u'6', (u'לא נשאר לי', u'none-left', u'🛑')),
     )
     username = models.CharField(max_length=200)
-    vote_time = models.DateField(auto_now=True)
+    vote_time = models.DateField()
     vote_selection = models.CharField(max_length=1)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, null=True)
 
@@ -101,6 +101,10 @@ class Vote(models.Model):
     def __str__(self):
         return "Vote: {selection} On {dish} by {user}".format(selection=self.vote_selection, dish=self.dish.name,
                                                                user=self.username)
+
+    @staticmethod
+    def get_diners_per_day(day):
+        return Vote.objects.filter(vote_time=day).order_by().values("username").distinct().count()
 
     @staticmethod
     def add_vote_from_json(jsoned_vote):
