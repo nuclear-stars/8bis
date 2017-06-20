@@ -31,12 +31,13 @@
 			var data = google.visualization.arrayToDataTable([
 			  ['תגובה', 'כמות'],
 			  {% for reaction, amount in today_reactions.items %}
-			  [reaction, amount],
+			  ['{{ reaction.0 }} {{ reaction.1 }}', {{ amount }}],
 			  {% endfor %}
 			]);
 			
 			var options = {
-			  title: 'תגובות על התפריט היומי'
+				title: 'תגובות על התפריט היומי',
+				sliceVisibilityThreshold:  .0014
 			};
 			
 			var chart = new google.visualization.PieChart(document.getElementById('today_reactions_piechart'));
@@ -73,7 +74,7 @@
 		
 	</script>
 	
-	<link rel="stylesheet" href="/static/webservice/kitchen_ui.css">
+	<link rel="stylesheet" href="{% static 'webservice/kitchen_ui.css' %}">
 	<meta charset="UTF-8" />
 	<title>סטטיסטיקות חדר אוכל</title>
 </head>
@@ -106,7 +107,7 @@
 	            <div>
 	                <div class="panel-body">
 						<ul class="nav nav-pills connectedSortable">
-							<div id="food_categories_piechart" style="width: 450px; height: 250px; float: right;"></div>
+							<div id="today_reactions_piechart" style="width: 450px; height: 250px; float: right;"></div>
 							<div id="rating_per_day_piechart" style="width: 550px; height: 250px; float:right; margin-right: 20px;"></div>
 						</ul>
 	                </div>
