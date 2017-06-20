@@ -301,3 +301,14 @@ def get_all_categories(request, restaurant_id):
 
 def manage_view(request, restaurant_id):
     return render(request, 'webservice/kitchen_ui.html', {})
+
+def satistics_view(request, restaurant_id):
+    end_day = datetime.datetime.now()
+    start_day = end_day - datetime.timedelta(days=30)
+    votes = Vote.get_votes_count_for_days_range(start_day, end_day)
+
+    context = {
+        'votes': {(day.split("-")[0], day.split("-")[1], day.split("-")[2]): votes[day] for day in votes.keys()}
+    }
+    return render(request, 'webservice/statistics.html', context)
+

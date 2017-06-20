@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/dishes/(?P<dish_id>[0-9]+)/set_extra_recipe$', views.set_extra_recipe, name='set_extra_recipe'),
 
     # Manage UI
-    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/manage', views.manage_view, name='rest-manage-view'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/manage/$', views.manage_view, name='rest-manage-view'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/manage/statistics/$', views.satistics_view, name='rest-manage-statistics'),
 ]

@@ -5,6 +5,7 @@ import json
 import datetime
 
 from django.db import models
+from django.db.models import Count
 
 class VoteSerializationException(Exception): pass
 
@@ -93,6 +94,11 @@ class Vote(models.Model):
     vote_time = models.DateField()
     vote_selection = models.CharField(max_length=1)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, null=True)
+
+    @staticmethod
+    def get_votes_count_for_days_range(start_day, end_day):
+        votes_count = Vote.objects.filter(vote_time__range=[start_day.strftime("%Y-%m-%d"), end_day.strftime("%Y-%m-%d")]).values('vote_time').annotate(total=Count('vote_time')).order_by("total")
+        return {vote['vote_time'].strftime("%Y-%m-%d"): vote['total'] for vote in votes_count}
 
     @staticmethod
     def get_votes_for_dish_id_and_day(dish_id, day):
