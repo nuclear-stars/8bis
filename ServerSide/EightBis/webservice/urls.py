@@ -11,7 +11,8 @@ urlpatterns = [
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today$', views.today_dishes, name='rest-detail'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/json$', views.today_dishes_json, name='rest-detail-json'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/(?P<day>\d{4}-\d{2}-\d{2})/json$', views.dishes_per_day_json, name='rest-detail-json'),
-    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/print.html', views.today_dishes_print, name='rest-detail-print'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/print.html', views.today_dishes_print, name='rest-detail-print-today'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/(?P<day>\d{4}-\d{2}-\d{2})/print.html', views.dishes_print, name='rest-detail-print'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/categories/json$', views.get_all_categories, name='get-all-categories'),
 
     # Get dishes

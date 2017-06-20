@@ -191,7 +191,6 @@ def get_day_dishes_as_dict(restaurant_id, day):
     daily_dishes = DailyDish.objects.filter(restaurant=restaurant.id, day__day=day.day,
                                             day__year=day.year,
                                             day__month=day.month)
-
     categories = {}
     for dish in daily_dishes:
         d = categories.get(dish.dish.category.name, [])
@@ -259,6 +258,15 @@ def today_dishes_print(request, restaurant_id):
     dishes_dict = get_today_dishes_as_dict(restaurant_id)
     context = {
         'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+        'categories': dishes_dict,
+    }
+    return render(request, 'webservice/printable_menu.html', context)
+
+def dishes_print(request, restaurant_id, day):
+    day = datetime.datetime.fromtimestamp(time.mktime(time.strptime(day, "%Y-%m-%d")))
+    dishes_dict = get_day_dishes_as_dict(restaurant_id, day)
+    context = {
+        'today_date': day.strftime("%d.%m.%y"),
         'categories': dishes_dict,
     }
     return render(request, 'webservice/printable_menu.html', context)
