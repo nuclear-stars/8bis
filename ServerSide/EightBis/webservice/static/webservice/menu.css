@@ -117,16 +117,19 @@ nav[uk-navbar] img {
 }
 
 dt {
-        margin-right: 10px;
+        margin-right: 10pt;
         font-size: 20pt;
 }
 dt > strong {
         font-size: 25pt;
         line-height: auto;
 }
+.current-reactions {
+	font-size: 20pt;
+}
 
 dd {
-        margin-right: 10px;
+        margin-right: 10pt;
         font-size: 20pt;
         line-height: auto;
 }
