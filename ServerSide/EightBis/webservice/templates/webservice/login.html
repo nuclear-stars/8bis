@@ -5,10 +5,6 @@
 
 
 {% block contents %}
-	<div class="uk-text-center uk-text-large" uk-alert>
-	    <p>תפריט היום - <strong>{{ today_date }}</strong></p>
-	</div>
-
 	<form method="POST" action="" class="uk-text-center">
 		<fieldset class="uk-fieldset">
 
@@ -21,7 +17,7 @@
 
 			<div class="uk-margin">
 				<button class="uk-button uk-button-danger">התחבר</button>
-
+				{% csrf_token %}
 			</div>
 
 		</fieldset>
