@@ -77,6 +77,13 @@ $(function () {
 				return true;
 	        }
 	    });
+
+		$("ul.nav i").click(function() {
+			var li = $(this).parent().parent();
+			var orig_category = category_id_from_li(li);
+		    $("#category-" + orig_category + " ul").append(li);
+			set_dish_today(li, false);
+		});
 	    
 	    $("#dishes-to-choose ul.nav").on("click", "li", function() {
 		    set_dish_today($(this), true);
@@ -150,14 +157,7 @@ $(function () {
     $( document ).ready(function() {
 	    spin();
 
-		$("ul.nav i").click(function() {
-			var li = $(this).parent().parent();
-			var orig_category = category_id_from_li(li);
-		    $("#category-" + orig_category + " ul").append(li);
-			set_dish_today(li, false);
-		});
-
-	    $.ajax({
+		$.ajax({
 		    type: "GET",
 		    url: AJAX_URL + "/restaurants/1/categories/json",
 		    success: function(data) {
