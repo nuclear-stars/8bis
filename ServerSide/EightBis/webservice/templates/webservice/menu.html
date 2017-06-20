@@ -18,7 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
 
 	<script type="text/javascript">
-		var Username = '{{ username }}'
+		var $username = '{{ username }}';
+		var $dateString = '{{ today_date }}';
 	</script>
 <script src="{% static 'webservice/menu.js' %}"></script>
 
@@ -26,7 +27,7 @@
   <script>
     var OneSignal = window.OneSignal || [];
     OneSignal.push(["init", {
-      appId: "e0ce05a9-e349-4ebb-8911-4b19e5c9bb80",
+      appId: "8848906a-363d-4b73-8a2d-d3ccb502b482",
       autoRegister: true, /* Set to true to automatically prompt visitors */
       httpPermissionRequest: {
         enable: true
