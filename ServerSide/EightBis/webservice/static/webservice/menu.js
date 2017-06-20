@@ -28,7 +28,8 @@ function changeReactionsStatus(dishId, icons) {
 	});
 	$.post({
 		// FIXME formatDate() is going to be problematic after midnight
-	   data: JSON.stringify({'votes': reactionArr, 'dishId': dishId, 'date': formatDate()}),
+	   // Fix username to be dynamic!
+	   data: JSON.stringify({'votes': reactionArr, 'dish_id': dishId, 'date': formatDate(), 'username': 'Mafmar'}),
 	   dataType: 'json',
 	   url: "/webservice/restaurants/1/dishes/" + dishId + "/",
 	   success: function(msg){

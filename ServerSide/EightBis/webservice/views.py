@@ -34,6 +34,7 @@ def rest_detail(request, restaurant_id):
     }
     return JsonResponse(value)
 
+@csrf_exempt
 def dish_update(request, restaurant_id, dish_id):
     dish = get_object_or_404(Dish, id=int(dish_id))
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
@@ -63,6 +64,7 @@ def dish_detail(request, restaurant_id, dish_id):
         except VoteSerializationException, e:
             # This means the user sent a melformed json
             return HttpResponse('Wrong JSON format', status=204)
+        return JsonResponse({'result': 'True'})
 
     if request.method == 'GET':
         return JsonResponse(dish.serialize(with_recipe=False))

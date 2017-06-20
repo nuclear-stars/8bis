@@ -90,7 +90,7 @@ class Vote(models.Model):
     )
     username = models.CharField(max_length=200)
     vote_time = models.DateField(auto_now=True)
-    vote_selection = models.CharField(max_length=1, choices=TASTE_VOTES_CHOICES)
+    vote_selection = models.CharField(max_length=1)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, null=True)
 
     @staticmethod
@@ -101,16 +101,33 @@ class Vote(models.Model):
     @staticmethod
     def add_vote_from_json(jsoned_vote):
         try:
-            import pdb; pdb.set_trace()
             vote_values = json.loads(jsoned_vote)
             dish_id = vote_values['dish_id']
             username = vote_values['username']
-            vote_selection = vote_values['selection']
+            vote_current_state = vote_values['votes']
+
+            # First we check if this user has already voted for this dish
+            previous_opinions = Vote.objects.filter(dish=dish_id, username=username)
+            previous_opinion_vector = {}
+            for key in Vote.TASTE_VOTES_CHOICES:
+                if any(map(lambda x: x.vote_selection == key[0], previous_opinions)):
+                    previous_opinion_vector[key[0]] = True
+                else:
+                    previous_opinion_vector[key[0]] = False
+
+            # Go over all vote options and see if we need to change the state
+            for key in previous_opinion_vector.keys():
+                # Check if the user has revoked his selection
+                if previous_opinion_vector[key] and not vote_current_state[key]:
+                     previous_opinions.filter(vote_selection=key).delete()
+                if not previous_opinion_vector[key] and vote_current_state[key]:
+                     new_vote = Vote(username=username,
+                                     dish=Dish.objects.get(id=dish_id),
+                                     vote_selection=key)
+
+                     new_vote.save()
+
         except Exception, e:
             raise VoteSerializationException
 
-        #if Vote.objects.filter(username=username, dish=dish_id, vote_time=models.DateField())
 
-        new_vote = Vote(username=username,
-                         dish=Dish.objects.get(id=dish_id),
-                         vote_selection=vote_selection)
