@@ -26,7 +26,7 @@ function changeReactionsStatus(dishId, icons) {
 	icons.find('.list a').each(function() {
 		var type = this.className.replace('selected', '').replace(' ', '');
 		setStorageValue(dishId + '-' + type, $(this).hasClass('selected'));
-		reactionArr[dishId] = $(this).hasClass('selected');
+		reactionArr[type] = $(this).hasClass('selected');
 	});
 	// todo submit reactionArr with ajax
 }
