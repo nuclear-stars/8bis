@@ -98,6 +98,10 @@ class Vote(models.Model):
         return {value[0]: Vote.objects.filter(vote_selection=value[0], dish=dish_id).count()
                 for value in Vote.TASTE_VOTES_CHOICES}
 
+    def __str__(self):
+        return "Vote: {selection} On {dish} by {user}".format(selection=self.vote_selection, dish=self.dish.name,
+                                                               user=self.username)
+
     @staticmethod
     def add_vote_from_json(jsoned_vote):
         try:
