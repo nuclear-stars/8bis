@@ -1,8 +1,9 @@
 $(function () {
 	//var AJAX_URL = "http://13.93.107.254/webservice"
-	var AJAX_URL = "http://1.1.0.41:8000/webservice"
+	var AJAX_URL = "/webservice"
 	var g_dishes = null;
 	var g_categories = null;
+	var g_spinner = null;
 	
 	function id_from_li(li, elem, id_prefix) {
 		var li_classes = li.attr(elem).split(' ');
@@ -15,6 +16,19 @@ $(function () {
 			}
 		});
 		return ret;
+	}
+	
+	function spin() {
+		var target = document.getElementsByTagName("body")[0];
+		g_spinner = new Spinner({});
+		g_spinner.spin(target);
+	}
+	
+	function unspin() {
+		if (g_spinner != null) {
+			g_spinner.stop();
+		}
+		g_spinner = null;
 	}
 	
 	function category_id_from_li(li) {
@@ -106,6 +120,8 @@ $(function () {
 	}
 	
 	function set_dish_today(li, should_add) {
+		spin();
+		
 		var dish_id = dish_id_from_li(li);
 		
 		url_suffix = "unset_day";
@@ -127,14 +143,17 @@ $(function () {
 					warning("שגיאה בעדכון התפריט. רענן ונסה שוב");
 					ret = false;
 				}
+				unspin();
 			},
 			failure: function(errMsg) {
 			    warning(errMsg);
 			    ui.sender.sortable("cancel");
+			    unspin();
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
 			    ui.sender.sortable("cancel");
+			    unspin();
 			},
 			async: false
 		});
@@ -143,6 +162,8 @@ $(function () {
     
     
     $( document ).ready(function() {
+	    spin();
+	    
 	    $.ajax({
 		    type: "GET",
 		    url: AJAX_URL + "/restaurants/1/categories/json",
@@ -155,7 +176,7 @@ $(function () {
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
 			}
-	    })
+	    }) // $.ajax
 	    
 	    var today_dishes = null;
 	    
@@ -180,21 +201,23 @@ $(function () {
 						} else {
 							warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
 						}
+						$(this).button('reset');
+						$('#editModal').modal('hide');
 					},
 					failure: function(errMsg) {
 					    warning(errMsg);
-					    ui.sender.sortable("cancel");
+					    $(this).button('reset');
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown) {
 					    warning(errorThrown);
-					    ui.sender.sortable("cancel");
+					    $(this).button('reset');
 					}
 				});
-				$('#editModal').modal('hide');
+				$(this).button('loading');
 			} else {
 				warning("Not possible");
 			}
-		});
+		}); // dishUpdate.click
 	    
 	    $("#editModal button#dishUpdateRecipeToday").click(function() {
 		    dish_id = $('#editModal #dishUpdateID').attr('value');
@@ -215,21 +238,23 @@ $(function () {
 						} else {
 							warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
 						}
+						$(this).button('reset');
+						$('#editModal').modal('hide');
 					},
 					failure: function(errMsg) {
 					    warning(errMsg);
-					    ui.sender.sortable("cancel");
+					    $(this).button('reset');
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown) {
 					    warning(errorThrown);
-					    ui.sender.sortable("cancel");
+					    $(this).button('reset');
 					}
 				});
-				$('#editModal').modal('hide');
+				$(this).button('loading');
 			} else {
 				warning("Not possible");
 			}
-	    });
+	    }); // dishUpdateRecipeToday.click
 	    
 	    $.ajax({
 		    type: "GET",
@@ -246,7 +271,7 @@ $(function () {
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
 			}
-	    })
+	    }) // $.ajax
 	    
 	    $.ajax({
 			type: "GET",
@@ -297,7 +322,7 @@ $(function () {
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
 			}
-		});
+		}); // $.ajax
 		
 		$('#datetimepicker').datepicker({
 		    format: "yyyy-mm-dd",
@@ -307,7 +332,7 @@ $(function () {
 			autoclose: true,
 		    language: "he"
 	    }).on('changeDate', function (ev) {
-		    $("#print_link").attr("href", "http://1.1.0.41:8000/webservice/restaurants/1/" + get_day() + "/print.html");
+		    $("#print_link").attr("href", AJAX_URL + "/restaurants/1/" + get_day() + "/print.html");
 		    
 		    $.ajax({
 			    type: "GET",
@@ -345,6 +370,8 @@ $(function () {
 				    warning(errorThrown);
 				}
 		    })
-		});
-	});
+		}); // datetimepicker.onChangeDate
+		
+		unspin();
+	}); // $(document).ready
 });
