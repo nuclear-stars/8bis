@@ -233,6 +233,10 @@ def get_today_dishes_as_list(restaurant_id):
 @csrf_exempt
 def today_dishes(request, restaurant_id):
 
+    return day_dishes(request, restaurant_id, datetime.datetime.now())
+
+def day_dishes(request, restaurant_id, day):
+
     username = request.COOKIES.get("username")
     # Get means user hasn't authenticated yet.
     if request.method == 'GET' and not username:
@@ -240,11 +244,12 @@ def today_dishes(request, restaurant_id):
 
     if request.method == 'POST':
         username = request.POST.get("Username")
-
-    dishes_dict = get_today_dishes_as_dict(restaurant_id)
-    votes_dict = {dish['id']: Vote.get_votes_for_dish_id(dish['id']) for cat in dishes_dict.values() for dish in cat}
+    if not isinstance(day, datetime.datetime):
+        day = datetime.datetime.fromtimestamp(time.mktime(time.strptime(day, "%Y-%m-%d")))
+    dishes_dict = get_day_dishes_as_dict(restaurant_id, day)
+    votes_dict = {dish['id']: Vote.get_votes_for_dish_id_and_day(dish['id'], day) for cat in dishes_dict.values() for dish in cat}
     context = {
-               'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+               'today_date': day.strftime("%d.%m.%y"),
                'categories': dishes_dict,
                'votes': votes_dict,
                'vote_choices': Vote.TASTE_VOTES_CHOICES,

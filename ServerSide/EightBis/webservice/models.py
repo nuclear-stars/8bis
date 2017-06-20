@@ -95,6 +95,11 @@ class Vote(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, null=True)
 
     @staticmethod
+    def get_votes_for_dish_id_and_day(dish_id, day):
+        return {value[0]: Vote.objects.filter(vote_selection=value[0], dish=dish_id, vote_time=day).count()
+                for value in Vote.TASTE_VOTES_CHOICES}
+
+    @staticmethod
     def get_votes_for_dish_id(dish_id):
         return {value[0]: Vote.objects.filter(vote_selection=value[0], dish=dish_id).count()
                 for value in Vote.TASTE_VOTES_CHOICES}

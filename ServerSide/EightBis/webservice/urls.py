@@ -9,6 +9,8 @@ urlpatterns = [
     # Returns all data about a certain restaurant
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/json$', views.rest_detail, name='rest-detail'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today$', views.today_dishes, name='rest-detail'),
+    url(r'^restaurants/(?P<restaurant_id>[0-9]+)/(?P<day>\d{4}-\d{2}-\d{2})/$', views.day_dishes, name='rest-detail-day'),
+
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/json$', views.today_dishes_json, name='rest-detail-json'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/(?P<day>\d{4}-\d{2}-\d{2})/json$', views.dishes_per_day_json, name='rest-detail-json'),
     url(r'^restaurants/(?P<restaurant_id>[0-9]+)/today/print.html', views.today_dishes_print, name='rest-detail-print-today'),
