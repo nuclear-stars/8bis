@@ -4,31 +4,37 @@ html {
 
 .share-icons
 {
-	direction: ltr;
-	display: none;
+        position: relative;
+        direction: ltr;
+	margin: 0;
+}
+.share-icons > span
+{
+	text-align: left;
+        position: absolute;
+        top: 30px;
+        left: 30px;
+}
+.share-icons .count
+{
 	position: absolute;
-	left: 50px;
-	line-height: 46px;
-	padding-right: 59px;
+	top: 20px;
 }
-.share-icons .count {
-	position: relative;
-}
+
 .share-icons .count > span
 {
-	z-index: 1000;
-	
-	position: absolute;
-	top: -25px;
-	float: left;
-	display: block;
-	border-radius: 4px;
-	background: #222;
-	color: #fff;
-	padding:0 5px;
-	line-height: 20px;
-	transition: transform .2s linear,background .2s ease,color .2s ease;
-	transform: scale(1) translate3d(0,0,0);
+        z-index: 1000;
+        position: relative;
+        top: -45px;
+        float: left;
+        display: block;
+        border-radius: 4px;
+        background: #222;
+        color: #fff;
+        padding:0 5px;
+        line-height: 20px;
+        transition: transform .2s linear,background .2s ease,color .2s ease;
+        transform: scale(1) translate3d(0,0,0);
 }
 .share-icons .list
 {
