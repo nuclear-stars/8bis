@@ -233,12 +233,14 @@ def get_today_dishes_as_list(restaurant_id):
 
 @csrf_exempt
 def today_dishes(request, restaurant_id):
+
+    username = request.COOKIES.get("username")
     # Get means user hasn't authenticated yet.
-    if request.method == 'GET':
+    if request.method == 'GET' and not username:
         return render(request, 'webservice/login.html', {})
 
-    # Verify username is not malicious
-    username = request.POST.get("Username")
+    if request.method == 'POST':
+        username = request.POST.get("Username")
 
     dishes_dict = get_today_dishes_as_dict(restaurant_id)
     votes_dict = {dish['id']: Vote.get_votes_for_dish_id(dish['id']) for cat in dishes_dict.values() for dish in cat}
@@ -249,7 +251,9 @@ def today_dishes(request, restaurant_id):
                'vote_choices': Vote.TASTE_VOTES_CHOICES,
                 'username': username
                }
-    return render(request, 'webservice/menu.html', context)
+    response = render(request, 'webservice/menu.html', context)
+    response.set_cookie("username", username)
+    return response
 
 def today_dishes_print(request, restaurant_id):
     dishes_dict = get_today_dishes_as_dict(restaurant_id)
