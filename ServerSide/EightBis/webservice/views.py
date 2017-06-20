@@ -113,7 +113,7 @@ def set_day(request, restaurant_id, dish_id):
             if json_content['day'] == 'today':
                 date = datetime.datetime.now()
             else:
-                date = time.strptime("%Y-%m-%d", json_content['day'])
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
             # Make sure this dish doesn't already exist in that days dishes
             if DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month).count() == 0:
@@ -140,16 +140,18 @@ def set_extra_recipe(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                now = datetime.datetime.now()
+                date = datetime.datetime.now()
+            else:
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
-                # Check if this dish is already set, if not we can't add a recepie
-                daily_dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
-                if len(daily_dish) != 0:
-                    new_daily = daily_dish[0]
-                    new_daily.extra_recipe = json_content['extra_recipe']
-                    new_daily.save()
+            # Check if this dish is already set, if not we can't add a recepie
+            daily_dish = DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month)
+            if len(daily_dish) != 0:
+                new_daily = daily_dish[0]
+                new_daily.extra_recipe = json_content['extra_recipe']
+                new_daily.save()
 
-                    result = {'result': "True"}
+                result = {'result': "True"}
         except Exception, e:
             pass
     return JsonResponse(result)
@@ -168,10 +170,12 @@ def unset_day(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                now = datetime.datetime.now()
+                date = datetime.datetime.now()
+            else:
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
                 # Make sure this dish doesn't already exist in that days dishes
-                dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
+                dish = DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month)
                 if len(dish) > 0:
                     dish.delete()
                     result = {'result': 'True'}
