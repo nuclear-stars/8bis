@@ -29,19 +29,17 @@
 		
 		function drawChart() {
 			var data = google.visualization.arrayToDataTable([
-			  ['Task', 'Hours per Day'],
-			  ['Work',     11],
-			  ['Eat',      2],
-			  ['Commute',  2],
-			  ['Watch TV', 2],
-			  ['Sleep',    7]
+			  ['תגובה', 'כמות'],
+			  {% for reaction, amount in today_reactions.items %}
+			  [reaction, amount],
+			  {% endfor %}
 			]);
 			
 			var options = {
-			  title: 'קטגוריות אוכל שדורגו היום'
+			  title: 'תגובות על התפריט היומי'
 			};
 			
-			var chart = new google.visualization.PieChart(document.getElementById('food_categories_piechart'));
+			var chart = new google.visualization.PieChart(document.getElementById('today_reactions_piechart'));
 			
 			chart.draw(data, options);
 			
@@ -50,7 +48,7 @@
 			data.addColumn('number', 'כמות דירוגים');
 			
 			data.addRows([
-				{% for date, amount in votes.items %}
+				{% for date, amount in rating_per_day.items %}
 				[new Date({{ date.0 }}, {{ date.1 }}, {{ date.2 }}), {{ amount }}],
 				{% endfor %}
 			]);
@@ -75,7 +73,7 @@
 		
 	</script>
 	
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="/static/webservice/kitchen_ui.css">
 	<meta charset="UTF-8" />
 	<title>סטטיסטיקות חדר אוכל</title>
 </head>
@@ -83,7 +81,7 @@
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="#"><img src="8bis.png" /></a>
+			<a class="navbar-brand" href="#"><img src="/static/webservice/images/8bis.png" /></a>
 		</div>
 		<div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
