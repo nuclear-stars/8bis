@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import json
 import datetime
+import time
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -110,16 +111,18 @@ def set_day(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                now = datetime.datetime.now()
+                date = datetime.datetime.now()
+            else:
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
-                # Make sure this dish doesn't already exist in that days dishes
-                if DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month).count() == 0:
-                    new_daily = DailyDish(dish=dish,
-                                          restaurant=restaurant,
-                                          extra_recipe="",
-                                          day=now)
-                    new_daily.save()
-                    result = {'result': "True"}
+            # Make sure this dish doesn't already exist in that days dishes
+            if DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month).count() == 0:
+                new_daily = DailyDish(dish=dish,
+                                      restaurant=restaurant,
+                                      extra_recipe="",
+                                      day=date)
+                new_daily.save()
+                result = {'result': "True"}
         except Exception, e:
             pass
     return JsonResponse(result)
@@ -137,16 +140,18 @@ def set_extra_recipe(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                now = datetime.datetime.now()
+                date = datetime.datetime.now()
+            else:
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
-                # Check if this dish is already set, if not we can't add a recepie
-                daily_dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
-                if len(daily_dish) != 0:
-                    new_daily = daily_dish[0]
-                    new_daily.extra_recipe = json_content['extra_recipe']
-                    new_daily.save()
+            # Check if this dish is already set, if not we can't add a recepie
+            daily_dish = DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month)
+            if len(daily_dish) != 0:
+                new_daily = daily_dish[0]
+                new_daily.extra_recipe = json_content['extra_recipe']
+                new_daily.save()
 
-                    result = {'result': "True"}
+                result = {'result': "True"}
         except Exception, e:
             pass
     return JsonResponse(result)
@@ -165,10 +170,12 @@ def unset_day(request, restaurant_id, dish_id):
             dish = get_object_or_404(Dish, id=dish_id)
             json_content = json.loads(request.read())
             if json_content['day'] == 'today':
-                now = datetime.datetime.now()
+                date = datetime.datetime.now()
+            else:
+                date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(json_content['day'], "%Y-%m-%d")))
 
                 # Make sure this dish doesn't already exist in that days dishes
-                dish = DailyDish.objects.filter(dish=dish_id, day__day=now.day, day__year=now.year, day__month=now.month)
+                dish = DailyDish.objects.filter(dish=dish_id, day__day=date.day, day__year=date.year, day__month=date.month)
                 if len(dish) > 0:
                     dish.delete()
                     result = {'result': 'True'}
@@ -178,13 +185,12 @@ def unset_day(request, restaurant_id, dish_id):
     return JsonResponse(result)
 
 
-def get_today_dishes_as_dict(restaurant_id):
+def get_day_dishes_as_dict(restaurant_id, day):
     restaurant = get_object_or_404(Restaurant, id=int(restaurant_id))
     # Get the list of dishes that are associated for today
-    today = datetime.datetime.now()
-    daily_dishes = DailyDish.objects.filter(restaurant=restaurant.id, day__day=today.day,
-                                            day__year=today.year,
-                                            day__month=today.month)
+    daily_dishes = DailyDish.objects.filter(restaurant=restaurant.id, day__day=day.day,
+                                            day__year=day.year,
+                                            day__month=day.month)
 
     categories = {}
     for dish in daily_dishes:
@@ -203,6 +209,19 @@ def get_today_dishes_as_dict(restaurant_id):
         categories[dish.dish.category.name] = d
 
     return categories
+
+
+def get_today_dishes_as_dict(restaurant_id):
+    today = datetime.datetime.now()
+    return get_day_dishes_as_dict(restaurant_id, today)
+
+def get_dishes_as_list_per_day(restaurant_id, day):
+    category_to_dish = get_day_dishes_as_dict(restaurant_id, day)
+    result_list = []
+    for cat, dishes in category_to_dish.items():
+         for dish in dishes:
+             result_list.append(dish)
+    return result_list
 
 def get_today_dishes_as_list(restaurant_id):
     category_to_dish = get_today_dishes_as_dict(restaurant_id)
@@ -230,6 +249,16 @@ def today_dishes_print(request, restaurant_id):
         'categories': dishes_dict,
     }
     return render(request, 'webservice/printable_menu.html', context)
+
+def dishes_per_day_json(request, restaurant_id, day):
+    # Convert the value of the day
+    try:
+        day = datetime.datetime.fromtimestamp(time.mktime(time.strptime(day, "%Y-%m-%d")))
+    except Exception, e:
+        return JsonResponse({"result": "False"})
+    value = {'dishes': get_dishes_as_list_per_day(restaurant_id, day=day)}
+    return JsonResponse(value)
+
 
 def today_dishes_json(request, restaurant_id):
      value = {'dishes': get_today_dishes_as_list(restaurant_id)}
