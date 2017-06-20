@@ -91,3 +91,7 @@ html {
 .share-icons .list a.selected {
 	background: #333!important;
 }
+
+.current-reactions {
+	margin-right: 5px;
+}
