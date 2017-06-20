@@ -67,7 +67,7 @@ $(function () {
 					update_callbacks();
 					return;
 				}
-				orig_category_name = "category-" + category_id_from_li(li);
+				var orig_category_name = "category-" + category_id_from_li(li);
 				if (orig_category_name != category_name) {
 					warning('לא ניתן להחזיר ארוחה מהסוג הלא נכון');
 					ui.sender.sortable("cancel");
@@ -83,6 +83,7 @@ $(function () {
 	    $("#dishes-to-choose ul.nav").on("click", "li", function() {
 		    set_dish_today($(this), true);
 		    $("#chosen-dishes ul").append($(this));
+			update_callbacks();
 	    });
 
 		$("#chosen-dishes ul.nav i").click(function() {
@@ -90,6 +91,7 @@ $(function () {
 			var orig_category = category_id_from_li(li);
 		    $("#category-" + orig_category + " ul").append(li);
 			set_dish_today(li, false);
+			update_callbacks();
 		});
 	    
 	    $("#chosen-dishes ul.nav").on("click", "li", function() {
