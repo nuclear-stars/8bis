@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 import json
+import datetime
 
 from django.db import models
 
@@ -131,7 +132,8 @@ class Vote(models.Model):
                 if not previous_opinion_vector[key] and vote_current_state[key]:
                      new_vote = Vote(username=username,
                                      dish=Dish.objects.get(id=dish_id),
-                                     vote_selection=key)
+                                     vote_selection=key,
+                                     vote_time=datetime.datetime.now())
 
                      new_vote.save()
 
