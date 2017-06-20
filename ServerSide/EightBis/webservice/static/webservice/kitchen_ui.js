@@ -4,7 +4,7 @@ $(function () {
 	var g_dishes = null;
 	var g_categories = null;
 	var g_spinner = null;
-	
+
 	function id_from_li(li, elem, id_prefix) {
 		var li_classes = li.attr(elem).split(' ');
 		var ret = "";
@@ -22,13 +22,15 @@ $(function () {
 		var target = document.getElementsByTagName("body")[0];
 		g_spinner = new Spinner({});
 		g_spinner.spin(target);
+		console.log("spin");
 	}
-	
+
 	function unspin() {
 		if (g_spinner != null) {
 			g_spinner.stop();
 		}
 		g_spinner = null;
+		console.log("unspin");
 	}
 	
 	function category_id_from_li(li) {
@@ -61,9 +63,7 @@ $(function () {
 				var category_name = $(this).parent().parent().parent().attr("id");
 				var li = $(ui.item[0]);
 				if (category_name == "chosen-dishes") {
-					if (!set_dish_today(li, true)) {
-						ui.sender.sortable("cancel");
-					}
+					set_dish_today(li, true);
 					return;
 				}
 				orig_category_name = "category-" + category_id_from_li(li);
@@ -72,19 +72,14 @@ $(function () {
 					ui.sender.sortable("cancel");
 					return;
 				}
-				if (!set_dish_today(li, false)) {
-					ui.sender.sortable("cancel");
-				}
+				set_dish_today(li, false);
 				// remove dish today
 				return true;
 	        }
 	    });
 	    
 	    $("#dishes-to-choose ul.nav").on("click", "li", function() {
-		    if (!set_dish_today($(this), true)) {
-			    // Don't add if we failed
-			    return;
-		    }
+		    set_dish_today($(this), true);
 		    $("#chosen-dishes ul").append($(this));
 	    });
 	    
@@ -128,8 +123,7 @@ $(function () {
 		if (should_add) {
 			url_suffix = "set_day";
 		}
-		
-		var ret = false;
+
 		$.ajax({
 			type: "POST",
 			url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/" + url_suffix,
@@ -138,10 +132,8 @@ $(function () {
 			success: function(data) { 
 				if (data.result == "True") {
 					success("התפריט עודכן בהצלחה");
-					ret = true;
 				} else {
 					warning("שגיאה בעדכון התפריט. רענן ונסה שוב");
-					ret = false;
 				}
 				unspin();
 			},
@@ -154,10 +146,8 @@ $(function () {
 			    warning(errorThrown);
 			    ui.sender.sortable("cancel");
 			    unspin();
-			},
-			async: false
+			}
 		});
-		return ret;
 	}
     
     
@@ -175,14 +165,16 @@ $(function () {
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    warning(errorThrown);
-			}
+			},
+			async: false
 	    }) // $.ajax
 	    
 	    var today_dishes = null;
 	    
 	    $("#editModal button#dishUpdate").click(function() {
-		    dish_id = $('#editModal #dishUpdateID').attr('value');
+		    var dish_id = $('#editModal #dishUpdateID').attr('value');
 		    $('#editModal #dishUpdateID').attr('value', '');
+			var button = $(this);
 		    
 		    if (dish_id != "") {
 			    $.ajax({
@@ -197,31 +189,32 @@ $(function () {
 					dataType: 'json',
 					success: function(data) { 
 						if (data.result == "True") {
-							success("מתכון המנה עודכן בהצלחה");
+							success("המנה עודכנה בהצלחה");
 						} else {
-							warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
+							warning("שגיאה בעדכון המנה. רענן ונסה שוב");
 						}
-						$(this).button('reset');
+						button.button('reset');
 						$('#editModal').modal('hide');
 					},
 					failure: function(errMsg) {
 					    warning(errMsg);
-					    $(this).button('reset');
+					    button.button('reset');
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown) {
 					    warning(errorThrown);
-					    $(this).button('reset');
+					    button.button('reset');
 					}
 				});
-				$(this).button('loading');
+				button.button('loading');
 			} else {
 				warning("Not possible");
 			}
 		}); // dishUpdate.click
 	    
 	    $("#editModal button#dishUpdateRecipeToday").click(function() {
-		    dish_id = $('#editModal #dishUpdateID').attr('value');
+		    var dish_id = $('#editModal #dishUpdateID').attr('value');
 		    $('#editModal #dishUpdateID').attr('value', '');
+			var button = $(this);
 		    
 		    if (dish_id != "") {
 			    $.ajax({
@@ -238,19 +231,19 @@ $(function () {
 						} else {
 							warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
 						}
-						$(this).button('reset');
+						button.button('reset');
 						$('#editModal').modal('hide');
 					},
 					failure: function(errMsg) {
 					    warning(errMsg);
-					    $(this).button('reset');
+					    button.button('reset');
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown) {
 					    warning(errorThrown);
-					    $(this).button('reset');
+					    button.button('reset');
 					}
 				});
-				$(this).button('loading');
+				button.button('loading');
 			} else {
 				warning("Not possible");
 			}
@@ -264,6 +257,57 @@ $(function () {
 				//    $("#chosen-dishes ul").append($("#dish-" + dish.id));
 			    //});
 			    today_dishes = data.dishes;
+
+				$.ajax({
+					type: "GET",
+					url: AJAX_URL + "/restaurants/1/json",
+					success: function(data) {
+						g_dishes = data.dishes;
+						$.each(data.dishes, function( index, dish ) {
+							var today = false;
+							$.each(today_dishes, function (index, today_dish) {
+								if (today_dish.id == dish.id) {
+									today = true;
+									dish.recipe = today_dish.recipe
+									return;
+								}
+							});
+
+							div_id = "category-" + dish.category;
+							li_id = "dish-" + dish.id;
+							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
+								$("#dishes-to-choose").append(
+									'<div class="panel panel-default" id="' + div_id + '"> \
+								<div class="panel-heading"> \
+									<h4 class="panel-title"> \
+										<a href="#">' + g_categories[dish.category] + '</a> \
+									</h4> \
+								</div> \
+								<div><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
+							</div>'
+								)
+							}
+
+							ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
+							// Div already exists
+							if (today) {
+								ul_to_add_to = $("#chosen-dishes ul")
+							}
+							ul_to_add_to.append(
+								'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
+							)
+						});
+
+						update_callbacks();
+						unspin();
+					},
+					failure: function(errMsg) {
+						warning(errMsg);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						warning(errorThrown);
+					}
+				}); // $.ajax
 		    },
 		    failure: function(errMsg) {
 			    warning(errMsg);
@@ -273,56 +317,7 @@ $(function () {
 			}
 	    }) // $.ajax
 	    
-	    $.ajax({
-			type: "GET",
-			url: AJAX_URL + "/restaurants/1/json",
-			success: function(data) { 
-				g_dishes = data.dishes;
-				$.each(data.dishes, function( index, dish ) {
-					var today = false;
-					$.each(today_dishes, function (index, today_dish) {
-						if (today_dish.id == dish.id) {
-							today = true;
-							dish.recipe = today_dish.recipe
-							return;
-						}
-					});
-					
-					div_id = "category-" + dish.category;
-					li_id = "dish-" + dish.id;
-					if ( !$( "#dishes-to-choose #" + div_id ).length ) {
-						$("#dishes-to-choose").append(
-							'<div class="panel panel-default" id="' + div_id + '"> \
-			            <div class="panel-heading"> \
-			                <h4 class="panel-title"> \
-			                    <a href="#">' + g_categories[dish.category] + '</a> \
-			                </h4> \
-			            </div> \
-			            <div><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
-			        </div>'
-						)
-					}
-					
-					ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
-					// Div already exists
-					if (today) {
-						ul_to_add_to = $("#chosen-dishes ul")
-					}
-					ul_to_add_to.append(
-						'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + '</a></li>'
-					)
-				});
-				
-				update_callbacks();
-				
-			},
-			failure: function(errMsg) {
-			    warning(errMsg);
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-			    warning(errorThrown);
-			}
-		}); // $.ajax
+
 		
 		$('#datetimepicker').datepicker({
 		    format: "yyyy-mm-dd",
@@ -371,7 +366,5 @@ $(function () {
 				}
 		    })
 		}); // datetimepicker.onChangeDate
-		
-		unspin();
 	}); // $(document).ready
 });
