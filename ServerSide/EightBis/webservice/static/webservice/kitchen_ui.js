@@ -64,7 +64,6 @@ $(function () {
 				var li = $(ui.item[0]);
 				if (category_name == "chosen-dishes") {
 					set_dish_today(li, true);
-					update_callbacks();
 					return;
 				}
 				var orig_category_name = "category-" + category_id_from_li(li);
@@ -74,7 +73,6 @@ $(function () {
 					return;
 				}
 				set_dish_today(li, false);
-				update_callbacks();
 				// remove dish today
 				return true;
 	        }
@@ -83,18 +81,9 @@ $(function () {
 	    $("#dishes-to-choose ul.nav").on("click", "li", function() {
 		    set_dish_today($(this), true);
 		    $("#chosen-dishes ul").append($(this));
-			update_callbacks();
 	    });
 
-		$("#chosen-dishes ul.nav i").click(function() {
-			var li = $(this).parent().parent();
-			var orig_category = category_id_from_li(li);
-		    $("#category-" + orig_category + " ul").append(li);
-			set_dish_today(li, false);
-			update_callbacks();
-		});
-	    
-	    $("#chosen-dishes ul.nav").on("click", "li", function() {
+		$("#chosen-dishes ul.nav").on("click", "li", function() {
 		    var dish_id = dish_id_from_li($(this));
 		    var dish = null;
 		    
@@ -160,7 +149,14 @@ $(function () {
     
     $( document ).ready(function() {
 	    spin();
-	    
+
+		$("ul.nav i").click(function() {
+			var li = $(this).parent().parent();
+			var orig_category = category_id_from_li(li);
+		    $("#category-" + orig_category + " ul").append(li);
+			set_dish_today(li, false);
+		});
+
 	    $.ajax({
 		    type: "GET",
 		    url: AJAX_URL + "/restaurants/1/categories/json",
