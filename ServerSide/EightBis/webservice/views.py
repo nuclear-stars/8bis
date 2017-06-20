@@ -201,6 +201,13 @@ def get_today_dishes_as_dict(restaurant_id):
 
     return categories
 
+def get_today_dishes_as_list(restaurant_id):
+    category_to_dish = get_today_dishes_as_dict(restaurant_id)
+    result_list = []
+    for cat, dishes in category_to_dish.items():
+         for dish in dishes:
+             result_list.append(dish)
+    return result_list
 
 def today_dishes(request, restaurant_id):
     dishes_dict = get_today_dishes_as_dict(restaurant_id)
@@ -213,12 +220,16 @@ def today_dishes(request, restaurant_id):
                }
     return render(request, 'webservice/menu.html', context)
 
+def today_dishes_print(request, restaurant_id):
+    today_dishes = get_today_dishes_as_list(restaurant_id)
+    context = {
+        'today_date': datetime.datetime.now().strftime("%d.%m.%y"),
+        'dishes': today_dishes,
+    }
+    return render(request, 'webservice/printable_menu.html', context)
+
 def today_dishes_json(request, restaurant_id):
-     category_to_dish = get_today_dishes_as_dict(restaurant_id)
-     value = {'dishes': []}
-     for cat, dishes in category_to_dish.items():
-         for dish in dishes:
-             value['dishes'].append(dish)
+     value = {'dishes': get_today_dishes_as_list(restaurant_id)}
      return JsonResponse(value)
 
 
