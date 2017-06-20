@@ -64,6 +64,7 @@ $(function () {
 				var li = $(ui.item[0]);
 				if (category_name == "chosen-dishes") {
 					set_dish_today(li, true);
+					update_callbacks();
 					return;
 				}
 				orig_category_name = "category-" + category_id_from_li(li);
@@ -73,6 +74,7 @@ $(function () {
 					return;
 				}
 				set_dish_today(li, false);
+				update_callbacks();
 				// remove dish today
 				return true;
 	        }
@@ -123,7 +125,7 @@ $(function () {
 		
 		var dish_id = dish_id_from_li(li);
 		
-		url_suffix = "unset_day";
+		var url_suffix = "unset_day";
 		if (should_add) {
 			url_suffix = "set_day";
 		}
@@ -154,7 +156,6 @@ $(function () {
 		});
 	}
     
-    
     $( document ).ready(function() {
 	    spin();
 	    
@@ -163,6 +164,74 @@ $(function () {
 		    url: AJAX_URL + "/restaurants/1/categories/json",
 		    success: function(data) {
 			    g_categories = data.categories;
+
+				$.ajax({
+					type: "GET",
+					url: AJAX_URL + "/restaurants/1/today/json",
+					success: function(data) {
+						//$.each(data.dishes, function( index, dish ) {
+						//    $("#chosen-dishes ul").append($("#dish-" + dish.id));
+						//});
+						today_dishes = data.dishes;
+
+						$.ajax({
+							type: "GET",
+							url: AJAX_URL + "/restaurants/1/json",
+							success: function(data) {
+								g_dishes = data.dishes;
+								$.each(data.dishes, function( index, dish ) {
+									var today = false;
+									$.each(today_dishes, function (index, today_dish) {
+										if (today_dish.id == dish.id) {
+											today = true;
+											dish.recipe = today_dish.recipe
+											return;
+										}
+									});
+
+									var div_id = "category-" + dish.category;
+									var li_id = "dish-" + dish.id;
+									if ( !$( "#dishes-to-choose #" + div_id ).length ) {
+										$("#dishes-to-choose").append(
+											'<div class="panel panel-default" id="' + div_id + '"> \
+										<div class="panel-heading"> \
+											<h4 class="panel-title"> \
+												<a href="#">' + g_categories[dish.category] + '</a> \
+											</h4> \
+										</div> \
+										<div><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
+									</div>'
+										)
+									}
+
+									var ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
+									// Div already exists
+									if (today) {
+										ul_to_add_to = $("#chosen-dishes ul")
+									}
+									ul_to_add_to.append(
+										'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + ' <i class="glyphicon" style="margin: 0 !important">&#57364;</i></a></li>'
+									)
+								});
+
+								update_callbacks();
+								unspin();
+							},
+							failure: function(errMsg) {
+								warning(errMsg);
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								warning(errorThrown);
+							}
+						}); // $.ajax
+					},
+					failure: function(errMsg) {
+						warning(errMsg);
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						warning(errorThrown);
+					}
+				}); // $.ajax
 		    },
 		    failure: function(errMsg) {
 			    warning(errMsg);
@@ -171,7 +240,7 @@ $(function () {
 			    warning(errorThrown);
 			},
 			async: false
-	    }) // $.ajax
+	    }); // $.ajax
 	    
 	    var today_dishes = null;
 	    
@@ -253,77 +322,7 @@ $(function () {
 			}
 	    }); // dishUpdateRecipeToday.click
 	    
-	    $.ajax({
-		    type: "GET",
-		    url: AJAX_URL + "/restaurants/1/today/json",
-		    success: function(data) {
-			    //$.each(data.dishes, function( index, dish ) {
-				//    $("#chosen-dishes ul").append($("#dish-" + dish.id));
-			    //});
-			    today_dishes = data.dishes;
-
-				$.ajax({
-					type: "GET",
-					url: AJAX_URL + "/restaurants/1/json",
-					success: function(data) {
-						g_dishes = data.dishes;
-						$.each(data.dishes, function( index, dish ) {
-							var today = false;
-							$.each(today_dishes, function (index, today_dish) {
-								if (today_dish.id == dish.id) {
-									today = true;
-									dish.recipe = today_dish.recipe
-									return;
-								}
-							});
-
-							var div_id = "category-" + dish.category;
-							var li_id = "dish-" + dish.id;
-							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
-								$("#dishes-to-choose").append(
-									'<div class="panel panel-default" id="' + div_id + '"> \
-								<div class="panel-heading"> \
-									<h4 class="panel-title"> \
-										<a href="#">' + g_categories[dish.category] + '</a> \
-									</h4> \
-								</div> \
-								<div><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
-							</div>'
-								)
-							}
-
-							var ul_to_add_to = $("#dishes-to-choose #" + div_id + " ul");
-							// Div already exists
-							if (today) {
-								ul_to_add_to = $("#chosen-dishes ul")
-							}
-							ul_to_add_to.append(
-								'<li class="active ' + div_id +'" id="' + li_id + '"><a href="#"><span class="glyphicon glyphicon-pencil"></span>' + dish.name + ' <i class="glyphicon" style="margin: 0 !important">&#57364;</i></a></li>'
-							)
-						});
-
-						update_callbacks();
-						unspin();
-					},
-					failure: function(errMsg) {
-						warning(errMsg);
-					},
-					error: function(XMLHttpRequest, textStatus, errorThrown) {
-						warning(errorThrown);
-					}
-				}); // $.ajax
-		    },
-		    failure: function(errMsg) {
-			    warning(errMsg);
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-			    warning(errorThrown);
-			}
-	    }); // $.ajax
-	    
-
-		
-		$('#datetimepicker').datepicker({
+	    $('#datetimepicker').datepicker({
 		    format: "yyyy-mm-dd",
 			todayBtn: true,
 			calendarWeeks: true,
