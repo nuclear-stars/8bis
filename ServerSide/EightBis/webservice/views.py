@@ -306,9 +306,11 @@ def satistics_view(request, restaurant_id):
     end_day = datetime.datetime.now()
     start_day = end_day - datetime.timedelta(days=30)
     votes = Vote.get_votes_count_for_days_range(start_day, end_day)
+    today_reactions = Vote.get_reaction_count_for_day(end_day)
 
     context = {
-        'votes': {(day.split("-")[0], day.split("-")[1], day.split("-")[2]): votes[day] for day in votes.keys()}
+        'rating_per_day': {(day.split("-")[0], day.split("-")[1], day.split("-")[2]): votes[day] for day in votes.keys()},
+        'today_reactions': today_reactions
     }
     return render(request, 'webservice/statistics.html', context)
 
