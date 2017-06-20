@@ -2,6 +2,10 @@ body {
   padding-top: 50px;
 }
 
+.navbar-brand {
+  padding: 7px !important;
+}
+
 .starter-template {
   padding: 40px 15px;
   text-align: center;
@@ -44,18 +48,36 @@ li.active a .glyphicon {
 	display: none;
 }
 
+input.form-control {
+	margin-bottom: 10px;
+}
+
+#datepicker_placeholder a {
+	padding: 10px 0;
+}
+
+#datepicker_placeholder input.form-control {
+	margin: 0 !important;
+}
+
 #chosen-dishes .nav li.active a .glyphicon {
 	display: inline !important;
 }
 
-li.active.salads-dish a {
+#category-3 h4.panel-title a {
+	color: #5cb85c;
+}
+li.active.category-3 a {
 	background-color: #5cb85c !important;
 }
 
-li.active.breakfast-dish a {
+#category-2 h4.panel-title a {
+	color: #f0ad4e;
+}
+li.active.category-2 a {
 	background-color: #f0ad4e !important;
 }
 
-li.active.carbs-dish a {
+li.active.category-1 a {
 	background-color: #0275d8 !important;
 }

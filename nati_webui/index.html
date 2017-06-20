@@ -17,6 +17,11 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/css/bootstrap-notify.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.js"></script>
 	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/css/bootstrap-datepicker.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/css/bootstrap-datepicker3.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/js/bootstrap-datepicker.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.0/locales/bootstrap-datepicker.he.min.js"></script>
+	
 	<link rel="stylesheet" href="style.css">
 	<script type="text/javascript">
 		$(function () {
@@ -65,26 +70,34 @@
 				$(".connectedSortable").sortable({
 			        connectWith: ".connectedSortable",
 			        receive: function(event, ui)  {
-						var category_name = $(this).parent().parent().attr("id");
+						var category_name = $(this).parent().parent().parent().attr("id");
 						var li = $(ui.item[0]);
 						if (category_name == "chosen-dishes") {
-							set_dish_today(li, true);
-							return true;
+							if (!set_dish_today(li, true)) {
+								ui.sender.sortable("cancel");
+							}
+							return;
 						}
 						orig_category_name = "category-" + category_id_from_li(li);
 						if (orig_category_name != category_name) {
 							warning('לא ניתן להחזיר ארוחה מהסוג הלא נכון');
 							ui.sender.sortable("cancel");
+							return;
 						}
-						set_dish_today(li, false);
+						if (!set_dish_today(li, false)) {
+							ui.sender.sortable("cancel");
+						}
 						// remove dish today
 						return true;
 			        }
 			    });
 			    
 			    $("#dishes-to-choose ul.nav").on("click", "li", function() {
+				    if (!set_dish_today($(this), true)) {
+					    // Don't add if we failed
+					    return;
+				    }
 				    $("#chosen-dishes ul").append($(this));
-				    set_dish_today($(this), true);
 			    });
 			    
 			    $("#chosen-dishes ul.nav").on("click", "li", function() {
@@ -114,6 +127,10 @@
 			    });
 			}
 			
+			function get_day() {
+				return $("#datetimepicker").val();
+			}
+			
 			function set_dish_today(li, should_add) {
 				var dish_id = dish_id_from_li(li);
 				
@@ -122,16 +139,19 @@
 					url_suffix = "set_day";
 				}
 				
+				var ret = false;
 				$.ajax({
 					type: "POST",
 					url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/" + url_suffix,
-					data: JSON.stringify({"day": "today"}),
+					data: JSON.stringify({"day": get_day()}),
 					dataType: 'json',
 					success: function(data) { 
 						if (data.result == "True") {
 							success("התפריט עודכן בהצלחה");
+							ret = true;
 						} else {
 							warning("שגיאה בעדכון התפריט. רענן ונסה שוב");
+							ret = false;
 						}
 					},
 					failure: function(errMsg) {
@@ -141,8 +161,10 @@
 					error: function(XMLHttpRequest, textStatus, errorThrown) {
 					    warning(errorThrown);
 					    ui.sender.sortable("cancel");
-					}
+					},
+					async: false
 				});
+				return ret;
 			}
 		    
 		    
@@ -163,29 +185,47 @@
 			    
 			    var today_dishes = null;
 			    
+			    $('#datetimepicker').datepicker({
+				    format: "yyyy-mm-dd",
+					todayBtn: true,
+					calendarWeeks: true,
+					todayHighlight: true,
+				    language: "he"
+			    });
+			    
 			    $("#editModal button#dishUpdateRecipeToday").click(function() {
 				    dish_id = $('#editModal #dishUpdateID').attr('value');
-				    $.ajax({
-						type: "POST",
-						url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/set_extra_recipe",
-						data: JSON.stringify({"extra_recipe": $('#editModal #dishRecipeEdit').html()}),
-						dataType: 'json',
-						success: function(data) { 
-							if (data.result == "True") {
-								success("מתכון המנה עודכן בהצלח");
-							} else {
-								warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
+				    $('#editModal #dishUpdateID').attr('value', '');
+				    
+				    if (dish_id != "") {
+					    $.ajax({
+							type: "POST",
+							url: AJAX_URL + "/restaurants/1/dishes/" + dish_id + "/set_extra_recipe",
+							data: JSON.stringify({
+								"extra_recipe": $('#editModal #dishRecipeEdit').val(),
+								"day": get_day()
+							}),
+							dataType: 'json',
+							success: function(data) { 
+								if (data.result == "True") {
+									success("מתכון המנה עודכן בהצלחה");
+								} else {
+									warning("שגיאה בעדכון מתכון המנה. רענן ונסה שוב");
+								}
+							},
+							failure: function(errMsg) {
+							    warning(errMsg);
+							    ui.sender.sortable("cancel");
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+							    warning(errorThrown);
+							    ui.sender.sortable("cancel");
 							}
-						},
-						failure: function(errMsg) {
-						    warning(errMsg);
-						    ui.sender.sortable("cancel");
-						},
-						error: function(XMLHttpRequest, textStatus, errorThrown) {
-						    warning(errorThrown);
-						    ui.sender.sortable("cancel");
-						}
-					});
+						});
+						$('#editModal').modal('hide');
+					} else {
+						
+					}
 			    });
 			    
 			    $.ajax({
@@ -215,6 +255,7 @@
 							$.each(today_dishes, function (index, today_dish) {
 								if (today_dish.id == dish.id) {
 									today = true;
+									dish.recipe = today_dish.recipe
 									return;
 								}
 							});
@@ -223,13 +264,13 @@
 							li_id = "dish-" + dish.id;
 							if ( !$( "#dishes-to-choose #" + div_id ).length ) {
 								$("#dishes-to-choose").append(
-									'<div class="panel panel-default"> \
+									'<div class="panel panel-default" id="' + div_id + '"> \
 					            <div class="panel-heading"> \
 					                <h4 class="panel-title"> \
 					                    <a href="#">' + g_categories[dish.category] + '</a> \
 					                </h4> \
 					            </div> \
-					            <div id="' + div_id + '" class=""><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
+					            <div><div class="panel-body"><ul class="nav nav-pills connectedSortable"></ul></div></div> \
 					        </div>'
 								)
 							}
@@ -262,22 +303,28 @@
 </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">תפריט חדר אוכל</a>
-        </div>
-      </div>
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#"><img src="8bis.png" /></a>
+		</div>
+		<ul class="nav navbar-nav navbar-left">
+			<li id="datepicker_placeholder">
+				<a href="#"><input type='text' class="form-control" id='datetimepicker' readonly="readonly" value="2017-06-20" /></a>
+			</li>
+			<li><a href="http://1.1.0.41:8000/webservice/restaurants/1/today/print.html"><span class="glyphicon glyphicon-print"></span> הדפס</a></li>
+		</ul>
+	</div>
     </nav>
     <div class='notifications bottom-right'></div>
     <div class="container">
 		<div class="panel-group">
-	        <div class="panel panel-default">
+	        <div class="panel panel-default" id="chosen-dishes">
 	            <div class="panel-heading">
 	                <h4 class="panel-title">
 	                    <a href="#">התפריט של היום</a>
 	                </h4>
 	            </div>
-	            <div id="chosen-dishes" class="">
+	            <div>
 	                <div class="panel-body">
 						<ul class="nav nav-pills connectedSortable">
 						</ul>
